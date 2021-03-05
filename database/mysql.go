@@ -1,23 +1,30 @@
 package database
 
 import (
-	"database/sql"
 	"github.com/AdiSaripuloh/online-store/config"
+	"github.com/AdiSaripuloh/online-store/models"
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/jinzhu/gorm"
 	"log"
 )
 
-var db *sql.DB
+var Mysql *gorm.DB
 
 func Connect(conf *config.DBConfig) {
-	DBUrl := config.BuildDBUrl(conf)
-	con, err := sql.Open("mysql", DBUrl)
+	dbUrl := config.BuildDbUrl(conf)
+	con, err := gorm.Open("mysql", dbUrl)
 	if err != nil {
 		log.Panic(err.Error())
 	}
-	db = con
+	Mysql = con
 	log.Println("Connection Established")
 }
 
-func Close() {
-	db.Close()
+func Migration() {
+	Mysql.AutoMigrate(&models.User{})
+	Mysql.AutoMigrate(&models.Cart{})
+}
+
+func Seed() {
+	Mysql.Create(models.DummyUser())
 }

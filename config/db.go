@@ -15,7 +15,7 @@ type DBConfig struct {
 	Database string
 }
 
-func BuildConfig() *DBConfig {
+func BuildDbConfig() *DBConfig {
 	port, err := strconv.Atoi(os.Getenv("DB_PORT"))
 	if err != nil {
 		port = 3306
