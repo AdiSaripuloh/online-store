@@ -22,9 +22,9 @@ func init() {
 }
 
 func main() {
-	DBConfig := config.BuildDbConfig()
-	db := database.Connect(DBConfig)
-	defer db.Close()
+	DBConfig := config.BuildDBConfig()
+	database.Connect(DBConfig)
+	defer database.Close()
 
 	port := os.Getenv("APP_PORT")
 	if port == "" {

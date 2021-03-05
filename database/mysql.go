@@ -8,11 +8,11 @@ import (
 
 var db *sql.DB
 
-func Connect(DBConfig *config.DBConfig) {
-	DBUrl := config.BuildDbUrl(DBConfig)
+func Connect(conf *config.DBConfig) {
+	DBUrl := config.BuildDBUrl(conf)
 	con, err := sql.Open("mysql", DBUrl)
 	if err != nil {
-		panic(err.Error())
+		log.Panic(err.Error())
 	}
 	db = con
 	log.Println("Connection Established")
