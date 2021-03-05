@@ -1,7 +1,8 @@
 package main
 
 import (
-	"github.com/AdiSaripuloh/config"
+	"github.com/AdiSaripuloh/online-store/config"
+	"github.com/AdiSaripuloh/online-store/database"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"log"
@@ -15,21 +16,22 @@ func init() {
 		log.Fatal("Error loading .env file")
 	}
 
-	DBConfig := config.db.BuildConfig()
-	_ := config.db.BuildDbUrl(DBConfig)
-
 	// TODO
 	// - create migrations
 	// - create resolver
 }
 
 func main() {
-	port := os.Getenv("APP_PORT")
-	router := gin.Default()
+	DBConfig := config.BuildDbConfig()
+	db := database.Connect(DBConfig)
+	defer db.Close()
 
+	port := os.Getenv("APP_PORT")
 	if port == "" {
 		port = "8000"
 	}
+
+	router := gin.Default()
 
 	// Home
 	router.GET("/", func(ctx *gin.Context) {
