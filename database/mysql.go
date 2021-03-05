@@ -21,8 +21,12 @@ func Connect(conf *config.DBConfig) {
 }
 
 func Migration() {
-	Mysql.AutoMigrate(&models.User{})
-	Mysql.AutoMigrate(&models.Cart{})
+	if !Mysql.HasTable(models.User.TableName) {
+		Mysql.AutoMigrate(&models.User{})
+	}
+	if !Mysql.HasTable(models.Cart.TableName) {
+		Mysql.AutoMigrate(&models.Cart{})
+	}
 }
 
 func Seed() {

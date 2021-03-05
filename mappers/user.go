@@ -1,12 +1,11 @@
-package mapper
+package mappers
 
 import (
 	"github.com/AdiSaripuloh/online-store/dto"
 	"github.com/AdiSaripuloh/online-store/models"
-	"github.com/gin-gonic/gin"
 )
 
-func UsersResponse(users []models.User) gin.H {
+func UsersResponse(users []models.User) []dto.User {
 	var response []dto.User
 	for _, user := range users {
 		response = append(response, dto.User{
@@ -16,5 +15,5 @@ func UsersResponse(users []models.User) gin.H {
 			Email:    user.Email,
 		})
 	}
-	return success(response)
+	return response
 }

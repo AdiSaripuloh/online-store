@@ -4,8 +4,8 @@ import (
 	"flag"
 	"github.com/AdiSaripuloh/online-store/config"
 	"github.com/AdiSaripuloh/online-store/database"
-	"github.com/AdiSaripuloh/online-store/mapper"
-	"github.com/AdiSaripuloh/online-store/models"
+	"github.com/AdiSaripuloh/online-store/handlers"
+	"github.com/AdiSaripuloh/online-store/resolvers"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"log"
@@ -13,7 +13,10 @@ import (
 	"os"
 )
 
-var port string
+var (
+	port        string
+	userHandler *handlers.UserHandler
+)
 
 func init() {
 	err := godotenv.Load()
@@ -41,9 +44,9 @@ func init() {
 		port = "8000"
 	}
 
-	// TODO
-	// - create migrations
-	// - create resolver
+	// Resolvers
+	userResolver := resolvers.NewResolver(database.Mysql)
+	userHandler = handlers.NewUserHandler(userResolver)
 }
 
 func main() {
@@ -64,11 +67,7 @@ func main() {
 		// V1
 		v1 := api.Group("v1")
 		{
-			v1.GET("/users", func(ctx *gin.Context) {
-				var results []models.User
-				database.Mysql.Select("id, fullName, phone, email").Find(&results)
-				ctx.JSON(http.StatusOK, mapper.UsersResponse(results))
-			})
+			v1.GET("/users", userHandler.GetAll)
 			v1.GET("/products", func(ctx *gin.Context) {
 				ctx.JSON(http.StatusOK, gin.H{
 					"message": "List Products",
