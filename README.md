@@ -69,7 +69,6 @@ Attribute | Description
 productId | Product ID
 quantity  | Product quantity
 
-
 ##### Returns:
 
 ```
@@ -89,5 +88,84 @@ Status Code | Description
 
 Error | Description
 ----- | ------------
+422   | Validation error
+500   | Internal server error
+
+### GET /cart
+
+```
+GET /cart
+Content-Type: "application/json"
+```
+
+##### Returns:
+
+```
+200 OK
+Content-Type: "application/json"
+
+{
+    "id": "f7630a17-2850-4c77-a7b6-99554814ccb8",
+    "products": [
+        {
+            "productId": "f7630a17-2850-4c77-a7b6-99554814ccb8",
+            "quantity": 10,
+        },
+        ...
+    ]
+}
+```
+
+Status Code | Description
+----------- | -----------
+200         | Success get cart and products
+
+##### Errors
+
+Error | Description
+----- | ------------
+404   | Cart not found
+500   | Internal server error
+
+### PUT /cart
+
+```
+PUT /cart
+Content-Type: "application/json"
+
+[
+    {
+        "productId": "f7630a17-2850-4c77-a7b6-99554814ccb8",
+        "quantity": 5,
+    },
+    ...
+]
+```
+
+Attribute | Description
+--------- | -----------
+productId | Product ID
+quantity  | Product quantity
+
+##### Returns:
+
+```
+200 OK
+Content-Type: "application/json"
+
+{
+    "message": "Cart has been updated"
+}
+```
+
+Status Code | Description
+----------- | -----------
+200         | Cart has been updated
+
+##### Errors
+
+Error | Description
+----- | ------------
+404   | Cart or product not found
 422   | Validation error
 500   | Internal server error
