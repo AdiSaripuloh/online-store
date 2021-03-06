@@ -24,8 +24,20 @@ func Migration() {
 	if !Mysql.HasTable(models.User.TableName) {
 		Mysql.AutoMigrate(&models.User{})
 	}
+	if !Mysql.HasTable(models.Product.TableName) {
+		Mysql.AutoMigrate(&models.Product{})
+	}
 	if !Mysql.HasTable(models.Cart.TableName) {
 		Mysql.AutoMigrate(&models.Cart{})
+	}
+	if !Mysql.HasTable(models.CartItem.TableName) {
+		Mysql.AutoMigrate(&models.CartItem{})
+	}
+	if !Mysql.HasTable(models.Order.TableName) {
+		Mysql.AutoMigrate(&models.Order{})
+	}
+	if !Mysql.HasTable(models.OrderItem.TableName) {
+		Mysql.AutoMigrate(&models.OrderItem{})
 	}
 }
 

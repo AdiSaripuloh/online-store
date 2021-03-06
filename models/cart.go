@@ -9,7 +9,7 @@ import (
 type Cart struct {
 	ID         uuid.UUID `gorm:"column:id;primaryKey"`
 	UserID     string    `gorm:"type:varbinary(255);column:userID;not null"`
-	GrandTotal float64   `gorm:"column:grandTotal"`
+	GrandTotal float64   `gorm:"column:grandTotal;not null"`
 	CreatedAt  time.Time `gorm:"column:createdAt;default:current_timestamp"`
 	UpdatedAt  time.Time `gorm:"column:updatedAt;type:timestamp;default:current_timestamp ON update current_timestamp"`
 }
