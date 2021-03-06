@@ -71,7 +71,7 @@ func (svc *cartService) Create(userID string, req requests.CreateCart) (*dto.Car
 		grandTotal += product.Price * float64(item.Quantity)
 		items = append(items, models.CartItem{
 			ProductID: product.ID,
-			Quantity:  product.Quantity,
+			Quantity:  item.Quantity,
 		})
 	}
 
