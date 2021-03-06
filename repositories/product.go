@@ -4,6 +4,7 @@ import (
 	"github.com/AdiSaripuloh/online-store/database"
 	"github.com/AdiSaripuloh/online-store/models"
 	"github.com/jinzhu/gorm"
+	uuid "github.com/satori/go.uuid"
 	"sync"
 )
 
@@ -11,6 +12,7 @@ type IProductRepository interface {
 	GetAll() ([]models.Product, error)
 	FindByID(id string) (*models.Product, error)
 	GetQuantityByID(id string) (*models.Product, error)
+	UpdateQuantityByID(id uuid.UUID, quantity int64) (bool, error)
 }
 
 type productRepository struct {
@@ -39,6 +41,16 @@ func (u *productRepository) GetAll() ([]models.Product, error) {
 		return nil, err
 	}
 	return results, nil
+}
+
+func (u *productRepository) UpdateQuantityByID(id uuid.UUID, quantity int64) (bool, error) {
+	err := database.Mysql.Model(&models.Product{}).Where("id = ?", id).Update(&models.Product{
+		Quantity: quantity,
+	}).Error
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
 func (u *productRepository) FindByID(id string) (*models.Product, error) {

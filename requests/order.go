@@ -9,6 +9,5 @@ type CreateOrder struct {
 }
 
 type PayOrder struct {
-	OrderID uuid.UUID `form:"orderID"`
-	Amount  float64   `form:"amount"`
+	Amount float64 `form:"amount"`
 }

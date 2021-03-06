@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"github.com/AdiSaripuloh/online-store/mappers"
+	"github.com/AdiSaripuloh/online-store/requests"
 	"github.com/AdiSaripuloh/online-store/resolvers"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -35,6 +36,24 @@ func (uh *OrderHandler) Show(ctx *gin.Context) {
 	order, err := uh.resolver.OrderService.GetOrderByID(orderId)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusNotFound, mappers.ResponseFailed("Order not found!"))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, mappers.ResponseSuccess(order))
+}
+
+func (uh *OrderHandler) Pay(ctx *gin.Context) {
+	var request requests.PayOrder
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(http.StatusOK, mappers.ResponseFailed(err.Error()))
+		return
+	}
+
+	orderId := ctx.Param("orderID")
+	userID := ctx.GetString("UserID")
+	order, err := uh.resolver.OrderService.Pay(orderId, userID, request)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusNotFound, mappers.ResponseFailed(err.Error()))
 		return
 	}
 

@@ -12,7 +12,7 @@ type IOrderRepository interface {
 	FindByIDWithItem(id string) (*models.Order, error)
 	FindByUserIDWithItem(id string) ([]models.Order, error)
 	IsExists(id string) (*bool, error)
-	Update(id string, order []models.OrderItem) (*models.Order, error)
+	UpdateStatusToPaid(id string) (bool, error)
 }
 
 type orderRepository struct {
@@ -68,6 +68,12 @@ func (u *orderRepository) IsExists(id string) (*bool, error) {
 	return &result, nil
 }
 
-func (u *orderRepository) Update(id string, items []models.OrderItem) (*models.Order, error) {
-	return nil, nil
+func (u *orderRepository) UpdateStatusToPaid(id string) (bool, error) {
+	err := database.Mysql.Model(&models.Order{}).Where("id = ?", id).Update(&models.Order{
+		Status: models.PAID,
+	}).Error
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }

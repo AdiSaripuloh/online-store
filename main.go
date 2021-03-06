@@ -91,7 +91,7 @@ func main() {
 			v1.Use(middlewares.Auth()).POST("/cart/checkout", handler.cartHandler.Checkout)
 			v1.Use(middlewares.Auth()).GET("/order", handler.orderHandler.Get)
 			v1.Use(middlewares.Auth()).GET("/order/:orderID", handler.orderHandler.Show)
-			//v1.Use(middlewares.Auth()).POST("/order/pay/:orderID", handler.orderHandler.Pay)
+			v1.Use(middlewares.Auth()).POST("/order/:orderID/pay", handler.orderHandler.Pay)
 		}
 	}
 

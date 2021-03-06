@@ -8,7 +8,7 @@ import (
 type Order struct {
 	ID         uuid.UUID     `json:"id"`
 	UserID     uuid.UUID     `json:"userID"`
-	GrandTotal float64       `json:"price"`
+	GrandTotal float64       `json:"grandTotal"`
 	Status     models.Status `json:"status"`
 	Items      []OrderItem   `json:"items"`
 }
