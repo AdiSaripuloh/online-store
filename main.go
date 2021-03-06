@@ -84,6 +84,7 @@ func main() {
 			v1.GET("/products", handler.productHandler.GetAll)
 			v1.Use(middlewares.Auth()).GET("/cart", handler.cartHandler.Get)
 			v1.Use(middlewares.Auth()).POST("/cart", handler.cartHandler.Create)
+			v1.Use(middlewares.Auth()).POST("/cart/checkout", handler.cartHandler.Checkout)
 		}
 	}
 

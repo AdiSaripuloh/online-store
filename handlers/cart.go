@@ -47,3 +47,20 @@ func (uh *CartHandler) Create(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, mappers.ResponseSuccess(cart))
 }
+
+func (uh *CartHandler) Checkout(ctx *gin.Context) {
+	var request requests.Checkout
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(http.StatusOK, mappers.ResponseFailed(err.Error()))
+		return
+	}
+
+	userID := ctx.GetString("UserID")
+	cart, err := uh.resolver.CartService.Checkout(userID, request)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, mappers.ResponseFailed(err.Error()))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, mappers.ResponseSuccess(cart))
+}

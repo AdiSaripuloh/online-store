@@ -14,11 +14,13 @@ import (
 type ICartService interface {
 	GetCartByUserID(id string) (*dto.Cart, error)
 	Create(userID string, req requests.CreateCart) (*dto.Cart, error)
+	Checkout(userID string, req requests.Checkout) (*dto.Order, error)
 }
 
 type cartService struct {
-	repository  repositories.ICartRepository
+	cartRepo    repositories.ICartRepository
 	productRepo repositories.IProductRepository
+	orderRepo   repositories.IOrderRepository
 }
 
 var (
@@ -26,11 +28,12 @@ var (
 	cartSvc     ICartService
 )
 
-func NewCartService(repository repositories.ICartRepository, productRepo repositories.IProductRepository) ICartService {
+func NewCartService(cartRepo repositories.ICartRepository, productRepo repositories.IProductRepository, orderRepo repositories.IOrderRepository) ICartService {
 	cartSvcLock.Do(func() {
 		cartSvc = &cartService{
-			repository:  repository,
+			cartRepo:    cartRepo,
 			productRepo: productRepo,
+			orderRepo:   orderRepo,
 		}
 	})
 
@@ -38,7 +41,7 @@ func NewCartService(repository repositories.ICartRepository, productRepo reposit
 }
 
 func (svc *cartService) GetCartByUserID(id string) (*dto.Cart, error) {
-	result, err := svc.repository.FindByUserIDWithItem(id)
+	result, err := svc.cartRepo.FindByUserIDWithItem(id)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +53,8 @@ func (svc *cartService) Create(userID string, req requests.CreateCart) (*dto.Car
 	if err != nil {
 		return nil, errors.New("Failed parsing UUID.")
 	}
-	exists, err := svc.repository.IsExists(userID)
+
+	exists, err := svc.cartRepo.IsExists(userID)
 	if err != nil {
 		return nil, errors.New("Can't find current cart.")
 	}
@@ -80,10 +84,94 @@ func (svc *cartService) Create(userID string, req requests.CreateCart) (*dto.Car
 		GrandTotal: grandTotal,
 		CartItems:  items,
 	}
-	result, err := svc.repository.Create(cart)
+	result, err := svc.cartRepo.Create(cart)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("Failed create cart")
 	}
 
 	return mappers.CartResponse(result), nil
+}
+
+func (svc *cartService) Checkout(userID string, req requests.Checkout) (*dto.Order, error) {
+	userUUID, err := uuid.FromString(userID)
+	if err != nil {
+		return nil, errors.New("Failed parsing UUID.")
+	}
+
+	cart, err := svc.cartRepo.FindByUserIDWithItem(userID)
+	if err != nil {
+		return nil, errors.New("Cart not found.")
+	}
+
+	var orderItems []models.OrderItem
+	var grandTotalOrder float64
+	var cartItem []models.CartItem
+	var grandTotalCart float64
+
+	for _, item := range req.Items {
+		product, err := svc.productRepo.FindByID(item.ProductID.String())
+		if err != nil {
+			return nil, errors.New("Some products not found. Please re-check your cart.")
+		}
+		if item.Quantity > product.Quantity {
+			return nil, errors.New(product.Name + " out of stock.")
+		}
+
+		foundInCart := false
+		for _, cItem := range cart.CartItems {
+			if cItem.ProductID == item.ProductID {
+				foundInCart = true
+				restQuantity := cItem.Quantity - item.Quantity
+				grandTotalCart += product.Price * float64(restQuantity)
+				cartItem = append(cartItem, models.CartItem{
+					ID:        cItem.ID,
+					ProductID: cItem.ProductID,
+					Quantity:  restQuantity,
+				})
+				break
+			}
+		}
+		if !foundInCart {
+			return nil, errors.New(product.Name + " not found in cart.")
+		}
+
+		grandTotalOrder += product.Price * float64(item.Quantity)
+		orderItems = append(orderItems, models.OrderItem{
+			ProductID: product.ID,
+			Quantity:  item.Quantity,
+		})
+	}
+
+	order := models.Order{
+		UserID:     userUUID,
+		GrandTotal: grandTotalOrder,
+		Status:     models.UNPAID,
+		OrderItems: orderItems,
+	}
+	result, err := svc.orderRepo.Create(order)
+	if err != nil {
+		return nil, errors.New("Failed create order")
+	}
+
+	if grandTotalCart > 0 {
+		cUpdate, err := svc.cartRepo.UpdateGrandTotalByID(cart.ID, grandTotalCart)
+		if err != nil {
+			return nil, errors.New("Failed update grand total cart " + cart.ID.String())
+		}
+		if cUpdate {
+			for _, cItem := range cartItem {
+				cIUpdate, err := svc.cartRepo.UpdateQtyCartItemByID(cItem.ID, cItem.Quantity)
+				if err != nil || !cIUpdate {
+					return nil, errors.New("Failed update quantity cart item " + cItem.ProductID.String())
+				}
+			}
+		}
+	} else {
+		cDelete, err := svc.cartRepo.DeleteByID(cart.ID)
+		if err != nil || !cDelete {
+			return nil, errors.New("Failed delete cart " + cart.ID.String())
+		}
+	}
+
+	return mappers.OrderResponse(result), nil
 }
