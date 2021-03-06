@@ -9,7 +9,8 @@ import (
 
 type IOrderRepository interface {
 	Create(order models.Order) (*models.Order, error)
-	FindByUserIDWithItem(id string) (*models.Order, error)
+	FindByIDWithItem(id string) (*models.Order, error)
+	FindByUserIDWithItem(id string) ([]models.Order, error)
 	IsExists(id string) (*bool, error)
 	Update(id string, order []models.OrderItem) (*models.Order, error)
 }
@@ -42,13 +43,22 @@ func (u *orderRepository) Create(order models.Order) (*models.Order, error) {
 	return &order, nil
 }
 
-func (u *orderRepository) FindByUserIDWithItem(id string) (*models.Order, error) {
+func (u *orderRepository) FindByIDWithItem(id string) (*models.Order, error) {
 	var result models.Order
-	err := database.Mysql.Select("id, userID, grandTotal, status").Preload("OrderItems").Where("userID = ?", id).First(&result).Error
+	err := database.Mysql.Select("id, userID, grandTotal, status").Preload("OrderItems").Where("id = ?", id).First(&result).Error
 	if err != nil {
 		return nil, err
 	}
 	return &result, nil
+}
+
+func (u *orderRepository) FindByUserIDWithItem(id string) ([]models.Order, error) {
+	var result []models.Order
+	err := database.Mysql.Select("id, userID, grandTotal, status").Preload("OrderItems").Where("userID = ?", id).Find(&result).Error
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
 }
 
 func (u *orderRepository) IsExists(id string) (*bool, error) {

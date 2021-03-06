@@ -82,7 +82,7 @@ Content-Type: "application/json"
 
 Status Code | Description
 ----------- | -----------
-201         | Chart has been added
+201         | Cart has been added
 
 ##### Errors
 

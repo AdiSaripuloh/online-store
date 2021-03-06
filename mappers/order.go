@@ -25,3 +25,11 @@ func OrderResponse(order *models.Order) *dto.Order {
 	}
 	return &response
 }
+
+func OrdersResponse(orders []models.Order) []*dto.Order {
+	var response []*dto.Order
+	for _, order := range orders {
+		response = append(response, OrderResponse(&order))
+	}
+	return response
+}

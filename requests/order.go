@@ -7,3 +7,8 @@ type CreateOrder struct {
 	GrandTotal float64   `form:"grantTotal"`
 	Items      []Items   `form:"items"`
 }
+
+type PayOrder struct {
+	OrderID uuid.UUID `form:"orderID"`
+	Amount  float64   `form:"amount"`
+}

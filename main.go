@@ -18,6 +18,7 @@ type Handler struct {
 	userHandler    *handlers.UserHandler
 	productHandler *handlers.ProductHandler
 	cartHandler    *handlers.CartHandler
+	orderHandler   *handlers.OrderHandler
 }
 
 var (
@@ -60,6 +61,9 @@ func init() {
 	// Cart
 	cartResolver := resolvers.NewCartResolver(database.Mysql)
 	handler.cartHandler = handlers.NewCartHandler(cartResolver)
+	// Order
+	orderResolver := resolvers.NewOrderResolver(database.Mysql)
+	handler.orderHandler = handlers.NewOrderHandler(orderResolver)
 }
 
 func main() {
@@ -80,11 +84,14 @@ func main() {
 		// V1
 		v1 := api.Group("v1")
 		{
-			v1.GET("/users", handler.userHandler.GetAll)
-			v1.GET("/products", handler.productHandler.GetAll)
+			v1.GET("/user", handler.userHandler.GetAll)
+			v1.GET("/product", handler.productHandler.GetAll)
 			v1.Use(middlewares.Auth()).GET("/cart", handler.cartHandler.Get)
 			v1.Use(middlewares.Auth()).POST("/cart", handler.cartHandler.Create)
 			v1.Use(middlewares.Auth()).POST("/cart/checkout", handler.cartHandler.Checkout)
+			v1.Use(middlewares.Auth()).GET("/order", handler.orderHandler.Get)
+			v1.Use(middlewares.Auth()).GET("/order/:orderID", handler.orderHandler.Show)
+			//v1.Use(middlewares.Auth()).POST("/order/pay/:orderID", handler.orderHandler.Pay)
 		}
 	}
 
