@@ -3,9 +3,11 @@ package database
 import (
 	"github.com/AdiSaripuloh/online-store/config"
 	"github.com/AdiSaripuloh/online-store/models"
+	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	"log"
+	"os"
 )
 
 var Mysql *gorm.DB
@@ -17,6 +19,9 @@ func Connect(conf *config.DBConfig) {
 		log.Panic(err.Error())
 	}
 	Mysql = con
+	if os.Getenv("APP_MODE") == gin.DebugMode {
+		Mysql.LogMode(true)
+	}
 	log.Println("Connection Established")
 }
 

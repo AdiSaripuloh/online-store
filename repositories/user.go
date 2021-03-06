@@ -32,7 +32,7 @@ func NewUserRepository(db *gorm.DB) IUserRepository {
 
 func (u *userRepository) GetAll() ([]models.User, error) {
 	var results []models.User
-	err := database.Mysql.Select("id, fullName, phone, email").Where("deletedAt IS NULL").Find(&results).Error
+	err := database.Mysql.Select("id, fullName, phone, email").Find(&results).Error
 	if err != nil {
 		return nil, err
 	}

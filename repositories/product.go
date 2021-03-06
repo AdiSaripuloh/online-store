@@ -32,7 +32,7 @@ func NewProductRepository(db *gorm.DB) IProductRepository {
 
 func (u *productRepository) GetAll() ([]models.Product, error) {
 	var results []models.Product
-	err := database.Mysql.Select("id, name, price, quantity").Where("deletedAt IS NULL").Find(&results).Error
+	err := database.Mysql.Select("id, name, price, quantity").Find(&results).Error
 	if err != nil {
 		return nil, err
 	}
