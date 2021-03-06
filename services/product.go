@@ -9,6 +9,7 @@ import (
 
 type IProductService interface {
 	GetAll() ([]dto.Product, error)
+	IsAvailable(id string, quantity int64) (bool, error)
 }
 
 type productService struct {
@@ -36,4 +37,15 @@ func (svc *productService) GetAll() ([]dto.Product, error) {
 		return nil, err
 	}
 	return mappers.ProductsResponse(results), nil
+}
+
+func (svc *productService) IsAvailable(id string, quantity int64) (bool, error) {
+	product, err := svc.repository.GetQuantityByID(id)
+	if err != nil {
+		return false, err
+	}
+	if product.Quantity < quantity {
+		return false, nil
+	}
+	return true, nil
 }

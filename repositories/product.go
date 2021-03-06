@@ -9,6 +9,8 @@ import (
 
 type IProductRepository interface {
 	GetAll() ([]models.Product, error)
+	FindByID(id string) (*models.Product, error)
+	GetQuantityByID(id string) (*models.Product, error)
 }
 
 type productRepository struct {
@@ -37,4 +39,22 @@ func (u *productRepository) GetAll() ([]models.Product, error) {
 		return nil, err
 	}
 	return results, nil
+}
+
+func (u *productRepository) FindByID(id string) (*models.Product, error) {
+	var result models.Product
+	err := database.Mysql.Select("id, name, price, quantity").Where("id = ?", id).First(&result).Error
+	if err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func (u *productRepository) GetQuantityByID(id string) (*models.Product, error) {
+	var result models.Product
+	err := database.Mysql.Select("id, quantity").Where("id = ?", id).First(&result).Error
+	if err != nil {
+		return nil, err
+	}
+	return &result, nil
 }

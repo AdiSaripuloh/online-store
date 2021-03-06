@@ -22,9 +22,9 @@ func NewUserHandler(resolver *resolvers.UserResolver) *UserHandler {
 func (uh *UserHandler) GetAll(ctx *gin.Context) {
 	users, err := uh.resolver.UserService.GetAll()
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, mappers.Err(err.Error()))
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, mappers.ResponseErr(err.Error()))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, mappers.Success(users))
+	ctx.JSON(http.StatusOK, mappers.ResponseSuccess(users))
 }

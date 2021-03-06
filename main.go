@@ -5,6 +5,7 @@ import (
 	"github.com/AdiSaripuloh/online-store/config"
 	"github.com/AdiSaripuloh/online-store/database"
 	"github.com/AdiSaripuloh/online-store/handlers"
+	"github.com/AdiSaripuloh/online-store/middlewares"
 	"github.com/AdiSaripuloh/online-store/resolvers"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -16,6 +17,7 @@ import (
 type Handler struct {
 	userHandler    *handlers.UserHandler
 	productHandler *handlers.ProductHandler
+	cartHandler    *handlers.CartHandler
 }
 
 var (
@@ -36,10 +38,10 @@ func init() {
 	dbConfig := config.BuildDbConfig()
 	database.Connect(dbConfig)
 	if *migration {
-		database.Migration()
+		go database.Migration()
 	}
 	if *seed {
-		database.Seed()
+		go database.Seed()
 	}
 
 	gin.SetMode(os.Getenv("APP_MODE"))
@@ -55,6 +57,9 @@ func init() {
 	// Product
 	productResolver := resolvers.NewProductResolver(database.Mysql)
 	handler.productHandler = handlers.NewProductHandler(productResolver)
+	// Cart
+	cartResolver := resolvers.NewCartResolver(database.Mysql)
+	handler.cartHandler = handlers.NewCartHandler(cartResolver)
 }
 
 func main() {
@@ -77,6 +82,8 @@ func main() {
 		{
 			v1.GET("/users", handler.userHandler.GetAll)
 			v1.GET("/products", handler.productHandler.GetAll)
+			v1.Use(middlewares.Auth()).GET("/cart", handler.cartHandler.Get)
+			v1.Use(middlewares.Auth()).POST("/cart", handler.cartHandler.Create)
 		}
 	}
 

@@ -22,9 +22,9 @@ func NewProductHandler(resolver *resolvers.ProductResolver) *ProductHandler {
 func (uh *ProductHandler) GetAll(ctx *gin.Context) {
 	products, err := uh.resolver.ProductService.GetAll()
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, mappers.Err(err.Error()))
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, mappers.ResponseErr(err.Error()))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, mappers.Success(products))
+	ctx.JSON(http.StatusOK, mappers.ResponseSuccess(products))
 }

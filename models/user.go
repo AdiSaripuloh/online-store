@@ -29,12 +29,3 @@ func (user *User) BeforeCreate(scope *gorm.Scope) error {
 	}
 	return scope.SetColumn("ID", id)
 }
-
-func DummyUser() *User {
-	user := User{
-		FullName: "Adi Saripuloh",
-		Phone:    "1234567890",
-		Email:    "adisaripuloh@gmail.com",
-	}
-	return &user
-}
