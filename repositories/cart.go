@@ -15,6 +15,7 @@ type ICartRepository interface {
 	UpdateGrandTotalByID(id uuid.UUID, grandTotal float64) (bool, error)
 	DeleteByID(id uuid.UUID) (bool, error)
 	UpdateQtyCartItemByID(id uuid.UUID, quantity int64) (bool, error)
+	DeleteCartItemByID(id uuid.UUID) (bool, error)
 }
 
 type cartRepository struct {
@@ -84,6 +85,16 @@ func (u *cartRepository) DeleteByID(id uuid.UUID) (bool, error) {
 func (u *cartRepository) UpdateQtyCartItemByID(id uuid.UUID, quantity int64) (bool, error) {
 	err := database.Mysql.Model(&models.CartItem{}).Where("id = ?", id).Update(&models.CartItem{
 		Quantity: quantity,
+	}).Error
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+func (u *cartRepository) DeleteCartItemByID(id uuid.UUID) (bool, error) {
+	err := database.Mysql.Model(&models.CartItem{}).Delete(&models.CartItem{
+		ID: id,
 	}).Error
 	if err != nil {
 		return false, err

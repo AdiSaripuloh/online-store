@@ -8,6 +8,7 @@ import (
 	"github.com/AdiSaripuloh/online-store/repositories"
 	"github.com/AdiSaripuloh/online-store/requests"
 	uuid "github.com/satori/go.uuid"
+	"log"
 	"sync"
 )
 
@@ -106,10 +107,10 @@ func (svc *cartService) Checkout(userID string, req requests.Checkout) (*dto.Ord
 	var orderItems []models.OrderItem
 	var grandTotalOrder float64
 	var cartItem []models.CartItem
-	var grandTotalCart float64
 
 	for _, item := range req.Items {
 		product, err := svc.productRepo.FindByID(item.ProductID.String())
+		log.Println(product)
 		if err != nil {
 			return nil, errors.New("Some products not found. Please re-check your cart.")
 		}
@@ -122,7 +123,6 @@ func (svc *cartService) Checkout(userID string, req requests.Checkout) (*dto.Ord
 			if cItem.ProductID == item.ProductID {
 				foundInCart = true
 				restQuantity := cItem.Quantity - item.Quantity
-				grandTotalCart += product.Price * float64(restQuantity)
 				cartItem = append(cartItem, models.CartItem{
 					ID:        cItem.ID,
 					ProductID: cItem.ProductID,
@@ -153,6 +153,7 @@ func (svc *cartService) Checkout(userID string, req requests.Checkout) (*dto.Ord
 		return nil, errors.New("Failed create order")
 	}
 
+	grandTotalCart := cart.GrandTotal - grandTotalOrder
 	if grandTotalCart > 0 {
 		cUpdate, err := svc.cartRepo.UpdateGrandTotalByID(cart.ID, grandTotalCart)
 		if err != nil {
@@ -160,9 +161,16 @@ func (svc *cartService) Checkout(userID string, req requests.Checkout) (*dto.Ord
 		}
 		if cUpdate {
 			for _, cItem := range cartItem {
-				cIUpdate, err := svc.cartRepo.UpdateQtyCartItemByID(cItem.ID, cItem.Quantity)
-				if err != nil || !cIUpdate {
-					return nil, errors.New("Failed update quantity cart item " + cItem.ProductID.String())
+				if cItem.Quantity > 0 {
+					cIUpdate, err := svc.cartRepo.UpdateQtyCartItemByID(cItem.ID, cItem.Quantity)
+					if err != nil || !cIUpdate {
+						return nil, errors.New("Failed update quantity cart item " + cItem.ProductID.String())
+					}
+				} else {
+					cDelete, err := svc.cartRepo.DeleteCartItemByID(cItem.ID)
+					if err != nil || !cDelete {
+						return nil, errors.New("Failed delete cart item " + cItem.ProductID.String())
+					}
 				}
 			}
 		}
