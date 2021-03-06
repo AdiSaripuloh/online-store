@@ -13,9 +13,14 @@ import (
 	"os"
 )
 
+type Handler struct {
+	userHandler    *handlers.UserHandler
+	productHandler *handlers.ProductHandler
+}
+
 var (
-	port        string
-	userHandler *handlers.UserHandler
+	port    string
+	handler Handler
 )
 
 func init() {
@@ -44,9 +49,12 @@ func init() {
 		port = "8000"
 	}
 
-	// Resolvers
-	userResolver := resolvers.NewResolver(database.Mysql)
-	userHandler = handlers.NewUserHandler(userResolver)
+	// User
+	userResolver := resolvers.NewUserResolver(database.Mysql)
+	handler.userHandler = handlers.NewUserHandler(userResolver)
+	// Product
+	productResolver := resolvers.NewProductResolver(database.Mysql)
+	handler.productHandler = handlers.NewProductHandler(productResolver)
 }
 
 func main() {
@@ -67,12 +75,8 @@ func main() {
 		// V1
 		v1 := api.Group("v1")
 		{
-			v1.GET("/users", userHandler.GetAll)
-			v1.GET("/products", func(ctx *gin.Context) {
-				ctx.JSON(http.StatusOK, gin.H{
-					"message": "List Products",
-				})
-			})
+			v1.GET("/users", handler.userHandler.GetAll)
+			v1.GET("/products", handler.productHandler.GetAll)
 		}
 	}
 

@@ -10,7 +10,7 @@ type UserResolver struct {
 	UserService svc.IUserService
 }
 
-func NewResolver(db *gorm.DB) *UserResolver {
+func NewUserResolver(db *gorm.DB) *UserResolver {
 	userRepository := repo.NewUserRepository(db)
 	userService := svc.NewUserService(userRepository)
 	return &UserResolver{
