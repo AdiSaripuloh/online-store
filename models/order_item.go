@@ -8,11 +8,15 @@ import (
 
 type OrderItem struct {
 	ID        uuid.UUID `gorm:"column:id;primaryKey"`
-	UserID    string    `gorm:"type:varbinary(255);column:userID;not null"`
-	ProductID string    `gorm:"type:varbinary(255);column:productID;not null"`
+	UserID    string    `gorm:"type:varbinary(255);column:userID;not null;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	OrderID   string    `gorm:"type:varbinary(255);column:orderID;not null;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	ProductID string    `gorm:"type:varbinary(255);column:productID;not null;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 	Quantity  int64     `gorm:"column:quantity;type:int unsigned;default:0;not null"`
 	CreatedAt time.Time `gorm:"column:createdAt;default:current_timestamp"`
 	UpdatedAt time.Time `gorm:"column:updatedAt;type:timestamp;default:current_timestamp ON update current_timestamp"`
+	User      User      `gorm:"foreignKey:UserID;references:ID"`
+	Order     Order     `gorm:"foreignKey:OrderID;references:ID"`
+	Product   Product   `gorm:"foreignKey:ProductID;references:ID"`
 }
 
 func (OrderItem) TableName() string {

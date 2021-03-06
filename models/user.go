@@ -8,12 +8,14 @@ import (
 
 type User struct {
 	ID        uuid.UUID  `gorm:"column:id;primaryKey"`
-	FullName  string     `gorm:"column:fullName;size:100"`
-	Phone     string     `gorm:"column:phone;size:100;unique"`
+	FullName  string     `gorm:"column:fullName;size:50"`
+	Phone     string     `gorm:"column:phone;size:16;unique"`
 	Email     string     `gorm:"column:email;size:100;unique"`
 	CreatedAt time.Time  `gorm:"column:createdAt;default:current_timestamp"`
 	UpdatedAt time.Time  `gorm:"column:updatedAt;type:timestamp;default:current_timestamp ON update current_timestamp"`
 	DeletedAt *time.Time `gorm:"column:deletedAt"`
+	Cart      *Cart      `gorm:"foreignKey:userID;references:id"`
+	Orders    []*Order   `gorm:"foreignKey:userID;references:id"`
 }
 
 func (User) TableName() string {

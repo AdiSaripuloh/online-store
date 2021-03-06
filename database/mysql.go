@@ -29,15 +29,21 @@ func Migration() {
 	}
 	if !Mysql.HasTable(models.Cart.TableName) {
 		Mysql.AutoMigrate(&models.Cart{})
+		Mysql.Model(&models.Cart{}).AddForeignKey("userID", "users(id)", "CASCADE", "CASCADE")
 	}
 	if !Mysql.HasTable(models.CartItem.TableName) {
 		Mysql.AutoMigrate(&models.CartItem{})
+		Mysql.Model(&models.CartItem{}).AddForeignKey("cartID", "carts(id)", "CASCADE", "CASCADE")
+		Mysql.Model(&models.CartItem{}).AddForeignKey("productID", "products(id)", "CASCADE", "CASCADE")
 	}
 	if !Mysql.HasTable(models.Order.TableName) {
 		Mysql.AutoMigrate(&models.Order{})
+		Mysql.Model(&models.Order{}).AddForeignKey("userID", "users(id)", "CASCADE", "CASCADE")
 	}
 	if !Mysql.HasTable(models.OrderItem.TableName) {
 		Mysql.AutoMigrate(&models.OrderItem{})
+		Mysql.Model(&models.OrderItem{}).AddForeignKey("orderID", "orders(id)", "CASCADE", "CASCADE")
+		Mysql.Model(&models.OrderItem{}).AddForeignKey("productID", "products(id)", "CASCADE", "CASCADE")
 	}
 }
 
