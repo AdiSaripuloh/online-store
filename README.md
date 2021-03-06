@@ -1,4 +1,4 @@
-Flash Sale Challenge
+Online Store Challenge
 ====================
 
 ## Challenge
