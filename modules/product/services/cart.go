@@ -62,7 +62,7 @@ func (svc *cartService) Create(userID string, req requests.CreateCart) (*dto.Car
 	var items []models.CartItem
 	var grandTotal float64
 	for _, item := range req.Items {
-		product, err := svc.productRepo.FindByID(item.ProductID.String())
+		product, err := svc.productRepo.FindByID(item.ProductID)
 		if err != nil {
 			return nil, errors.New("Some products not found. Please re-check your cart.")
 		}
@@ -105,7 +105,7 @@ func (svc *cartService) Checkout(userID string, req requests.Checkout) (*dto.Ord
 	var cartItem []*models.CartItem
 
 	for _, item := range req.Items {
-		product, err := svc.productRepo.FindByID(item.ProductID.String())
+		product, err := svc.productRepo.FindByID(item.ProductID)
 		log.Println(product)
 		if err != nil {
 			return nil, errors.New("Some products not found. Please re-check your cart.")

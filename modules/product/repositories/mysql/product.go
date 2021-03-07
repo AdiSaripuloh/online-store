@@ -35,17 +35,7 @@ func (pr *productRepository) FindAll() ([]*models.Product, error) {
 	return results, nil
 }
 
-func (pr *productRepository) UpdateQuantityByID(id uuid.UUID, quantity int64) (bool, error) {
-	err := pr.db.Model(&models.Product{}).Where("id = ?", id).Update(&models.Product{
-		Quantity: quantity,
-	}).Error
-	if err != nil {
-		return false, err
-	}
-	return true, nil
-}
-
-func (pr *productRepository) FindByID(id string) (*models.Product, error) {
+func (pr *productRepository) FindByID(id uuid.UUID) (*models.Product, error) {
 	var result models.Product
 	err := pr.db.Select("id, name, price, quantity").Where("id = ?", id).First(&result).Error
 	if err != nil {
@@ -54,11 +44,19 @@ func (pr *productRepository) FindByID(id string) (*models.Product, error) {
 	return &result, nil
 }
 
-func (pr *productRepository) GetQuantityByID(id string) (*models.Product, error) {
+func (pr *productRepository) GetQuantityByID(id uuid.UUID) (*models.Product, error) {
 	var result models.Product
 	err := pr.db.Select("id, quantity").Where("id = ?", id).First(&result).Error
 	if err != nil {
 		return nil, err
 	}
 	return &result, nil
+}
+
+func (pr *productRepository) Update(product *models.Product) (bool, error) {
+	err := pr.db.Model(&models.Product{}).Update(product).Error
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }

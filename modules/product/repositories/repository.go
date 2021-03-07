@@ -7,9 +7,9 @@ import (
 
 type ProductRepository interface {
 	FindAll() ([]*models.Product, error)
-	FindByID(id string) (*models.Product, error)
-	GetQuantityByID(id string) (*models.Product, error)
-	UpdateQuantityByID(id uuid.UUID, quantity int64) (bool, error)
+	FindByID(id uuid.UUID) (*models.Product, error)
+	GetQuantityByID(id uuid.UUID) (*models.Product, error)
+	Update(product *models.Product) (bool, error)
 }
 
 type CartRepository interface {
@@ -29,8 +29,8 @@ type CartItemRepository interface {
 
 type OrderRepository interface {
 	Create(order models.Order) (*models.Order, error)
-	FindByIDWithItem(id string) (*models.Order, error)
-	FindByUserIDWithItem(id string) ([]models.Order, error)
-	IsExists(id string) (*bool, error)
-	UpdateStatusToPaid(id string) (bool, error)
+	FindByIDWithItems(id uuid.UUID) (*models.Order, error)
+	FindByUserIDWithItems(id uuid.UUID) ([]models.Order, error)
+	Update(order *models.Order) (bool, error)
+	IsExists(id uuid.UUID) (*bool, error)
 }

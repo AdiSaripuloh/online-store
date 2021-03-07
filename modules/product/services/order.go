@@ -33,7 +33,12 @@ func NewOrderService(orderRepo repositories.OrderRepository, productRepo reposit
 }
 
 func (svc *orderService) GetOrderByID(id string) (*dto.Order, error) {
-	result, err := svc.orderRepo.FindByIDWithItem(id)
+	uuID, err := uuid.FromString(id)
+	if err != nil {
+		return nil, errors.New("Failed parsing UUID.")
+	}
+
+	result, err := svc.orderRepo.FindByIDWithItems(uuID)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +46,12 @@ func (svc *orderService) GetOrderByID(id string) (*dto.Order, error) {
 }
 
 func (svc *orderService) GetOrderByUserID(id string) ([]*dto.Order, error) {
-	result, err := svc.orderRepo.FindByUserIDWithItem(id)
+	uuID, err := uuid.FromString(id)
+	if err != nil {
+		return nil, errors.New("Failed parsing UUID.")
+	}
+
+	result, err := svc.orderRepo.FindByUserIDWithItems(uuID)
 	if err != nil {
 		return nil, err
 	}
@@ -49,9 +59,18 @@ func (svc *orderService) GetOrderByUserID(id string) ([]*dto.Order, error) {
 }
 
 func (svc *orderService) Pay(id string, userID string, req requests.PayOrder) (*dto.Order, error) {
-	order, err := svc.orderRepo.FindByIDWithItem(id)
+	uuID, err := uuid.FromString(id)
+	if err != nil {
+		return nil, errors.New("Failed parsing UUID.")
+	}
+
+	order, err := svc.orderRepo.FindByIDWithItems(uuID)
 	if err != nil {
 		return nil, errors.New("Order not found.")
+	}
+
+	if order.Status != models.UNPAID {
+		return nil, errors.New("Order status is " + string(order.Status) + ". Contact administrator for more information.")
 	}
 
 	if order.GrandTotal != req.Amount {
@@ -67,7 +86,7 @@ func (svc *orderService) Pay(id string, userID string, req requests.PayOrder) (*
 	}
 
 	for _, item := range order.OrderItems {
-		product, err := svc.productRepo.GetQuantityByID(item.ProductID.String())
+		product, err := svc.productRepo.GetQuantityByID(item.ProductID)
 		if err != nil {
 			return nil, errors.New("Failed get product quantity.")
 		}
@@ -75,10 +94,16 @@ func (svc *orderService) Pay(id string, userID string, req requests.PayOrder) (*
 			return nil, errors.New(product.Name + " out of stock.")
 		}
 		quantity := product.Quantity - item.Quantity
-		_, _ = svc.productRepo.UpdateQuantityByID(item.ProductID, quantity)
+		_, _ = svc.productRepo.Update(&models.Product{
+			ID:       item.ProductID,
+			Quantity: quantity,
+		})
 	}
 
-	update, err := svc.orderRepo.UpdateStatusToPaid(id)
+	update, err := svc.orderRepo.Update(&models.Order{
+		ID:     order.ID,
+		Status: models.PAID,
+	})
 	if err != nil || !update {
 		return nil, errors.New("Failed update status")
 	}

@@ -1,9 +1,11 @@
 package services
 
 import (
+	"errors"
 	"github.com/AdiSaripuloh/online-store/mappers"
 	"github.com/AdiSaripuloh/online-store/modules/product/dto"
 	"github.com/AdiSaripuloh/online-store/modules/product/repositories"
+	uuid "github.com/satori/go.uuid"
 	"sync"
 )
 
@@ -35,7 +37,12 @@ func (svc *productService) All() ([]*dto.Product, error) {
 }
 
 func (svc *productService) IsAvailable(id string, quantity int64) (bool, error) {
-	product, err := svc.repository.GetQuantityByID(id)
+	uuID, err := uuid.FromString(id)
+	if err != nil {
+		return false, errors.New("Failed parsing UUID.")
+	}
+
+	product, err := svc.repository.GetQuantityByID(uuID)
 	if err != nil {
 		return false, err
 	}

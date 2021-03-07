@@ -20,7 +20,7 @@ func NewOrderHandler(resolver *resolvers.OrderResolver) *OrderHandler {
 	return handler
 }
 
-func (uh *OrderHandler) Get(ctx *gin.Context) {
+func (uh *OrderHandler) Index(ctx *gin.Context) {
 	userID := ctx.GetString("UserID")
 	order, err := uh.resolver.OrderService.GetOrderByUserID(userID)
 	if err != nil {

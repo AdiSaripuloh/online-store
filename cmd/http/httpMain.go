@@ -57,7 +57,7 @@ func main() {
 			v1.Use(middlewares.Auth()).GET("/cart", handler.CartHandler.Index)
 			v1.Use(middlewares.Auth()).POST("/cart", handler.CartHandler.Store)
 			v1.Use(middlewares.Auth()).POST("/cart/checkout", handler.CartHandler.Checkout)
-			v1.Use(middlewares.Auth()).GET("/order", handler.OrderHandler.Get)
+			v1.Use(middlewares.Auth()).GET("/order", handler.OrderHandler.Index)
 			v1.Use(middlewares.Auth()).GET("/order/:orderID", handler.OrderHandler.Show)
 			v1.Use(middlewares.Auth()).POST("/order/:orderID/pay", handler.OrderHandler.Pay)
 		}
