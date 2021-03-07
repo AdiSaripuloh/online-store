@@ -12,13 +12,6 @@ import (
 	"os"
 )
 
-type Handler struct {
-	userHandler    *handlers.UserHandler
-	productHandler *handlers.ProductHandler
-	cartHandler    *handlers.CartHandler
-	orderHandler   *handlers.OrderHandler
-}
-
 var (
 	port    string
 	handler *handlers.Handler
