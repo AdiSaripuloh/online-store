@@ -20,7 +20,7 @@ func (Cart) TableName() string {
 	return "carts"
 }
 
-func (user *Cart) BeforeCreate(scope *gorm.Scope) error {
+func (cart *Cart) BeforeCreate(scope *gorm.Scope) error {
 	id, err := uuid.NewV4()
 	if err != nil {
 		return err

@@ -21,7 +21,7 @@ func (CartItem) TableName() string {
 	return "cart_items"
 }
 
-func (user *CartItem) BeforeCreate(scope *gorm.Scope) error {
+func (cartItem *CartItem) BeforeCreate(scope *gorm.Scope) error {
 	id, err := uuid.NewV4()
 	if err != nil {
 		return err

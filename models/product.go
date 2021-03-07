@@ -22,7 +22,7 @@ func (Product) TableName() string {
 	return "products"
 }
 
-func (user *Product) BeforeCreate(scope *gorm.Scope) error {
+func (product *Product) BeforeCreate(scope *gorm.Scope) error {
 	id, err := uuid.NewV4()
 	if err != nil {
 		return err

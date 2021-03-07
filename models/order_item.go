@@ -21,7 +21,7 @@ func (OrderItem) TableName() string {
 	return "order_items"
 }
 
-func (user *OrderItem) BeforeCreate(scope *gorm.Scope) error {
+func (orderItem *OrderItem) BeforeCreate(scope *gorm.Scope) error {
 	id, err := uuid.NewV4()
 	if err != nil {
 		return err
