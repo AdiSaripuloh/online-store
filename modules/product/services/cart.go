@@ -13,9 +13,10 @@ import (
 )
 
 type cartService struct {
-	cartRepo    repositories.CartRepository
-	productRepo repositories.ProductRepository
-	orderRepo   repositories.OrderRepository
+	cartRepo     repositories.CartRepository
+	cartItemRepo repositories.CartItemRepository
+	productRepo  repositories.ProductRepository
+	orderRepo    repositories.OrderRepository
 }
 
 var (
@@ -23,19 +24,21 @@ var (
 	cartSvc     CartService
 )
 
-func NewCartService(cartRepo repositories.CartRepository, productRepo repositories.ProductRepository, orderRepo repositories.OrderRepository) CartService {
+func NewCartService(cartRepo repositories.CartRepository, cartItemRepo repositories.CartItemRepository, productRepo repositories.ProductRepository, orderRepo repositories.OrderRepository) CartService {
 	cartSvcLock.Do(func() {
 		cartSvc = &cartService{
-			cartRepo:    cartRepo,
-			productRepo: productRepo,
-			orderRepo:   orderRepo,
+			cartRepo:     cartRepo,
+			cartItemRepo: cartItemRepo,
+			productRepo:  productRepo,
+			orderRepo:    orderRepo,
 		}
 	})
 	return cartSvc
 }
 
-func (svc *cartService) GetCartByUserID(id string) (*dto.Cart, error) {
-	result, err := svc.cartRepo.FindByUserIDWithItems(id)
+func (svc *cartService) GetByUserID(id string) (*dto.Cart, error) {
+	uuID, err := uuid.FromString(id)
+	result, err := svc.cartRepo.FindByUserIDWithItems(uuID)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +51,7 @@ func (svc *cartService) Create(userID string, req requests.CreateCart) (*dto.Car
 		return nil, errors.New("Failed parsing UUID.")
 	}
 
-	exists, err := svc.cartRepo.IsExists(userID)
+	exists, err := svc.cartRepo.IsExists(userUUID)
 	if err != nil {
 		return nil, errors.New("Can't find current cart.")
 	}
@@ -92,14 +95,14 @@ func (svc *cartService) Checkout(userID string, req requests.Checkout) (*dto.Ord
 		return nil, errors.New("Failed parsing UUID.")
 	}
 
-	cart, err := svc.cartRepo.FindByUserIDWithItems(userID)
+	cart, err := svc.cartRepo.FindByUserIDWithItems(userUUID)
 	if err != nil {
 		return nil, errors.New("Cart not found.")
 	}
 
 	var orderItems []models.OrderItem
 	var grandTotalOrder float64
-	var cartItem []models.CartItem
+	var cartItem []*models.CartItem
 
 	for _, item := range req.Items {
 		product, err := svc.productRepo.FindByID(item.ProductID.String())
@@ -116,7 +119,7 @@ func (svc *cartService) Checkout(userID string, req requests.Checkout) (*dto.Ord
 			if cItem.ProductID == item.ProductID {
 				foundInCart = true
 				restQuantity := cItem.Quantity - item.Quantity
-				cartItem = append(cartItem, models.CartItem{
+				cartItem = append(cartItem, &models.CartItem{
 					ID:        cItem.ID,
 					ProductID: cItem.ProductID,
 					Quantity:  restQuantity,
@@ -148,19 +151,19 @@ func (svc *cartService) Checkout(userID string, req requests.Checkout) (*dto.Ord
 
 	grandTotalCart := cart.GrandTotal - grandTotalOrder
 	if grandTotalCart > 0 {
-		cUpdate, err := svc.cartRepo.UpdateGrandTotalByID(cart.ID, grandTotalCart)
+		cUpdate, err := svc.cartRepo.Update(&models.Cart{ID: cart.ID, GrandTotal: grandTotalCart})
 		if err != nil {
 			return nil, errors.New("Failed update grand total cart " + cart.ID.String())
 		}
 		if cUpdate {
 			for _, cItem := range cartItem {
 				if cItem.Quantity > 0 {
-					cIUpdate, err := svc.cartRepo.UpdateQtyCartItemByID(cItem.ID, cItem.Quantity)
+					cIUpdate, err := svc.cartItemRepo.Update(cItem)
 					if err != nil || !cIUpdate {
 						return nil, errors.New("Failed update quantity cart item " + cItem.ProductID.String())
 					}
 				} else {
-					cDelete, err := svc.cartRepo.DeleteCartItemByID(cItem.ID)
+					cDelete, err := svc.cartItemRepo.Delete(cItem)
 					if err != nil || !cDelete {
 						return nil, errors.New("Failed delete cart item " + cItem.ProductID.String())
 					}
@@ -168,7 +171,7 @@ func (svc *cartService) Checkout(userID string, req requests.Checkout) (*dto.Ord
 			}
 		}
 	} else {
-		cDelete, err := svc.cartRepo.DeleteByID(cart.ID)
+		cDelete, err := svc.cartRepo.Delete(&models.Cart{ID: cart.ID})
 		if err != nil || !cDelete {
 			return nil, errors.New("Failed delete cart " + cart.ID.String())
 		}

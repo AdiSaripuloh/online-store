@@ -14,12 +14,17 @@ type ProductRepository interface {
 
 type CartRepository interface {
 	Create(cart models.Cart) (*models.Cart, error)
-	FindByUserIDWithItems(id string) (*models.Cart, error)
-	IsExists(id string) (*bool, error)
-	UpdateGrandTotalByID(id uuid.UUID, grandTotal float64) (bool, error)
-	DeleteByID(id uuid.UUID) (bool, error)
-	UpdateQtyCartItemByID(id uuid.UUID, quantity int64) (bool, error)
-	DeleteCartItemByID(id uuid.UUID) (bool, error)
+	Update(*models.Cart) (bool, error)
+	Delete(*models.Cart) (bool, error)
+	FindByUserIDWithItems(userID uuid.UUID) (*models.Cart, error)
+	IsExists(id uuid.UUID) (*bool, error)
+}
+
+type CartItemRepository interface {
+	Create(cartItem models.CartItem) (*models.CartItem, error)
+	FindByID(id uuid.UUID) (*models.CartItem, error)
+	Update(cartItem *models.CartItem) (bool, error)
+	Delete(cartItem *models.CartItem) (bool, error)
 }
 
 type OrderRepository interface {

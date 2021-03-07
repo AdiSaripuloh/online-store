@@ -23,7 +23,6 @@ func NewCartRepository(db *gorm.DB) repositories.CartRepository {
 			db: db,
 		}
 	})
-
 	return cartRepo
 }
 
@@ -32,62 +31,37 @@ func (cr *cartRepository) Create(cart models.Cart) (*models.Cart, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return &cart, nil
 }
 
-func (cr *cartRepository) FindByUserIDWithItems(id string) (*models.Cart, error) {
+func (cr *cartRepository) Update(cart *models.Cart) (bool, error) {
+	err := cr.db.Model(&models.Cart{}).Update(cart).Error
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+func (cr *cartRepository) Delete(cart *models.Cart) (bool, error) {
+	err := cr.db.Delete(cart).Error
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+func (cr *cartRepository) FindByUserIDWithItems(userID uuid.UUID) (*models.Cart, error) {
 	var result models.Cart
-	err := cr.db.Select("id, userID, grandTotal").Preload("CartItems").Where("userID = ?", id).First(&result).Error
+	err := cr.db.Select("id, userID, grandTotal").Preload("CartItems").Where("userID = ?", userID).First(&result).Error
 	if err != nil {
 		return nil, err
 	}
 	return &result, nil
 }
 
-func (cr *cartRepository) IsExists(id string) (*bool, error) {
+func (cr *cartRepository) IsExists(id uuid.UUID) (*bool, error) {
 	var result bool
 	row := cr.db.Raw("SELECT EXISTS(SELECT 1 FROM carts WHERE userID = ?)", id).Row()
 	row.Scan(&result)
 	return &result, nil
-}
-
-func (cr *cartRepository) UpdateGrandTotalByID(id uuid.UUID, grandTotal float64) (bool, error) {
-	err := cr.db.Model(&models.Cart{}).Where("id = ?", id).Update(&models.Cart{
-		GrandTotal: grandTotal,
-	}).Error
-	if err != nil {
-		return false, err
-	}
-	return true, nil
-}
-
-func (cr *cartRepository) DeleteByID(id uuid.UUID) (bool, error) {
-	err := cr.db.Model(&models.Cart{}).Delete(&models.Cart{
-		ID: id,
-	}).Error
-	if err != nil {
-		return false, err
-	}
-	return true, nil
-}
-
-func (cr *cartRepository) UpdateQtyCartItemByID(id uuid.UUID, quantity int64) (bool, error) {
-	err := cr.db.Model(&models.CartItem{}).Where("id = ?", id).Update(&models.CartItem{
-		Quantity: quantity,
-	}).Error
-	if err != nil {
-		return false, err
-	}
-	return true, nil
-}
-
-func (cr *cartRepository) DeleteCartItemByID(id uuid.UUID) (bool, error) {
-	err := cr.db.Model(&models.CartItem{}).Delete(&models.CartItem{
-		ID: id,
-	}).Error
-	if err != nil {
-		return false, err
-	}
-	return true, nil
 }

@@ -22,7 +22,7 @@ func NewCartHandler(resolver *resolvers.CartResolver) *CartHandler {
 
 func (uh *CartHandler) Index(ctx *gin.Context) {
 	userID := ctx.GetString("UserID")
-	cart, err := uh.resolver.CartService.GetCartByUserID(userID)
+	cart, err := uh.resolver.CartService.GetByUserID(userID)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusNotFound, mappers.ResponseFailed("Cart not found!"))
 		return
@@ -31,7 +31,7 @@ func (uh *CartHandler) Index(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, mappers.ResponseSuccess(cart))
 }
 
-func (uh *CartHandler) Create(ctx *gin.Context) {
+func (uh *CartHandler) Store(ctx *gin.Context) {
 	var request requests.CreateCart
 	if err := ctx.ShouldBindJSON(&request); err != nil {
 		ctx.JSON(http.StatusOK, mappers.ResponseFailed(err.Error()))

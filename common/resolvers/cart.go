@@ -12,9 +12,10 @@ type CartResolver struct {
 
 func NewCartResolver(db *gorm.DB) *CartResolver {
 	cartRepository := mysql.NewCartRepository(db)
+	cartItemRepository := mysql.NewCartItemRepository(db)
 	productRepository := mysql.NewProductRepository(db)
 	orderRepository := mysql.NewOrderRepository(db)
-	cartService := services.NewCartService(cartRepository, productRepository, orderRepository)
+	cartService := services.NewCartService(cartRepository, cartItemRepository, productRepository, orderRepository)
 	return &CartResolver{
 		CartService: cartService,
 	}
