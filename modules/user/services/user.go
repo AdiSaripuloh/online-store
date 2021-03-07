@@ -1,7 +1,6 @@
 package services
 
 import (
-	"github.com/AdiSaripuloh/online-store/mappers"
 	"github.com/AdiSaripuloh/online-store/modules/user/dto"
 	"github.com/AdiSaripuloh/online-store/modules/user/repositories"
 	"sync"
@@ -31,5 +30,5 @@ func (svc *userService) GetAll() ([]*dto.User, error) {
 	if err != nil {
 		return nil, err
 	}
-	return mappers.UsersResponse(results), nil
+	return dto.UsersResponse(results), nil
 }

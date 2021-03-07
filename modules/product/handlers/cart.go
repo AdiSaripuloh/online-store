@@ -3,7 +3,7 @@ package handlers
 import (
 	"github.com/AdiSaripuloh/online-store/common/resolvers"
 	"github.com/AdiSaripuloh/online-store/mappers"
-	"github.com/AdiSaripuloh/online-store/modules/product/requests"
+	"github.com/AdiSaripuloh/online-store/modules/product/dto"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -32,7 +32,7 @@ func (uh *CartHandler) Index(ctx *gin.Context) {
 }
 
 func (uh *CartHandler) Store(ctx *gin.Context) {
-	var request requests.CreateCart
+	var request dto.CreateCartRequest
 	if err := ctx.ShouldBindJSON(&request); err != nil {
 		ctx.JSON(http.StatusOK, mappers.ResponseFailed(err.Error()))
 		return
@@ -49,7 +49,7 @@ func (uh *CartHandler) Store(ctx *gin.Context) {
 }
 
 func (uh *CartHandler) Checkout(ctx *gin.Context) {
-	var request requests.Checkout
+	var request dto.CheckoutCartRequest
 	if err := ctx.ShouldBindJSON(&request); err != nil {
 		ctx.JSON(http.StatusOK, mappers.ResponseFailed(err.Error()))
 		return

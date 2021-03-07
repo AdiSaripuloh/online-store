@@ -2,11 +2,9 @@ package services
 
 import (
 	"errors"
-	"github.com/AdiSaripuloh/online-store/mappers"
 	"github.com/AdiSaripuloh/online-store/modules/product/dto"
 	"github.com/AdiSaripuloh/online-store/modules/product/models"
 	"github.com/AdiSaripuloh/online-store/modules/product/repositories"
-	"github.com/AdiSaripuloh/online-store/modules/product/requests"
 	uuid "github.com/satori/go.uuid"
 	"sync"
 )
@@ -42,7 +40,7 @@ func (svc *orderService) GetOrderByID(id string) (*dto.Order, error) {
 	if err != nil {
 		return nil, err
 	}
-	return mappers.OrderResponse(result), nil
+	return dto.OrderResponse(result), nil
 }
 
 func (svc *orderService) GetOrderByUserID(id string) ([]*dto.Order, error) {
@@ -55,10 +53,10 @@ func (svc *orderService) GetOrderByUserID(id string) ([]*dto.Order, error) {
 	if err != nil {
 		return nil, err
 	}
-	return mappers.OrdersResponse(result), nil
+	return dto.OrdersResponse(result), nil
 }
 
-func (svc *orderService) Pay(id string, userID string, req requests.PayOrder) (*dto.Order, error) {
+func (svc *orderService) Pay(id string, userID string, req dto.PayOrderRequest) (*dto.Order, error) {
 	uuID, err := uuid.FromString(id)
 	if err != nil {
 		return nil, errors.New("Failed parsing UUID.")
@@ -110,5 +108,5 @@ func (svc *orderService) Pay(id string, userID string, req requests.PayOrder) (*
 
 	order.Status = models.PAID
 
-	return mappers.OrderResponse(order), nil
+	return dto.OrderResponse(order), nil
 }

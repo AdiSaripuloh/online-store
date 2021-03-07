@@ -2,11 +2,9 @@ package services
 
 import (
 	"errors"
-	"github.com/AdiSaripuloh/online-store/mappers"
 	"github.com/AdiSaripuloh/online-store/modules/product/dto"
 	"github.com/AdiSaripuloh/online-store/modules/product/models"
 	"github.com/AdiSaripuloh/online-store/modules/product/repositories"
-	"github.com/AdiSaripuloh/online-store/modules/product/requests"
 	uuid "github.com/satori/go.uuid"
 	"log"
 	"sync"
@@ -42,10 +40,10 @@ func (svc *cartService) GetByUserID(id string) (*dto.Cart, error) {
 	if err != nil {
 		return nil, err
 	}
-	return mappers.CartResponse(result), nil
+	return dto.CartResponse(result), nil
 }
 
-func (svc *cartService) Create(userID string, req requests.CreateCart) (*dto.Cart, error) {
+func (svc *cartService) Create(userID string, req dto.CreateCartRequest) (*dto.Cart, error) {
 	userUUID, err := uuid.FromString(userID)
 	if err != nil {
 		return nil, errors.New("Failed parsing UUID.")
@@ -86,10 +84,10 @@ func (svc *cartService) Create(userID string, req requests.CreateCart) (*dto.Car
 		return nil, errors.New("Failed create cart")
 	}
 
-	return mappers.CartResponse(result), nil
+	return dto.CartResponse(result), nil
 }
 
-func (svc *cartService) Checkout(userID string, req requests.Checkout) (*dto.Order, error) {
+func (svc *cartService) Checkout(userID string, req dto.CheckoutCartRequest) (*dto.Order, error) {
 	userUUID, err := uuid.FromString(userID)
 	if err != nil {
 		return nil, errors.New("Failed parsing UUID.")
@@ -177,5 +175,5 @@ func (svc *cartService) Checkout(userID string, req requests.Checkout) (*dto.Ord
 		}
 	}
 
-	return mappers.OrderResponse(result), nil
+	return dto.OrderResponse(result), nil
 }

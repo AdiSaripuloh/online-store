@@ -3,7 +3,7 @@ package handlers
 import (
 	"github.com/AdiSaripuloh/online-store/common/resolvers"
 	"github.com/AdiSaripuloh/online-store/mappers"
-	"github.com/AdiSaripuloh/online-store/modules/product/requests"
+	"github.com/AdiSaripuloh/online-store/modules/product/dto"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -43,7 +43,7 @@ func (uh *OrderHandler) Show(ctx *gin.Context) {
 }
 
 func (uh *OrderHandler) Pay(ctx *gin.Context) {
-	var request requests.PayOrder
+	var request dto.PayOrderRequest
 	if err := ctx.ShouldBindJSON(&request); err != nil {
 		ctx.JSON(http.StatusOK, mappers.ResponseFailed(err.Error()))
 		return

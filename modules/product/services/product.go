@@ -2,7 +2,6 @@ package services
 
 import (
 	"errors"
-	"github.com/AdiSaripuloh/online-store/mappers"
 	"github.com/AdiSaripuloh/online-store/modules/product/dto"
 	"github.com/AdiSaripuloh/online-store/modules/product/repositories"
 	uuid "github.com/satori/go.uuid"
@@ -33,7 +32,7 @@ func (svc *productService) All() ([]*dto.Product, error) {
 	if err != nil {
 		return nil, err
 	}
-	return mappers.ProductsResponse(results), nil
+	return dto.ProductsResponse(results), nil
 }
 
 func (svc *productService) IsAvailable(id string, quantity int64) (bool, error) {
