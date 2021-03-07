@@ -1,34 +1,43 @@
-package http
+package main
 
 import (
-	"github.com/AdiSaripuloh/online-store/database"
+	"flag"
+	"github.com/AdiSaripuloh/online-store/config"
 	"github.com/AdiSaripuloh/online-store/middlewares"
 	"github.com/AdiSaripuloh/online-store/modules/product/handlers"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"log"
 	"net/http"
 	"os"
 )
 
-var (
-	port string
-)
+func init() {
+	migration := flag.Bool("migration", false, "Migrate Database")
+	seed := flag.Bool("seed", false, "Seed Database")
+	flag.Parse()
 
-func Http() {
-	port = os.Getenv("APP_PORT")
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	port := os.Getenv("APP_PORT")
 	if port == "" {
 		port = "8000"
 	}
 
-	migration := false
-	seed := false
-	database.InitDatabase(&migration, &seed)
-	defer database.Mysql.Close()
+	config.NewHttpConfig(port, migration, seed)
+}
 
-	handler := handlers.NewHandler(database.Mysql)
-
+func main() {
 	router := gin.Default()
-	gin.SetMode(os.Getenv("APP_MODE"))
+	gin.SetMode(config.HttpConfig.HttpDebugMode)
+
+	handler := handlers.NewHandler()
+	if handler == nil {
+		log.Fatal("Setup .env properly")
+	}
 
 	// Home
 	router.GET("/", func(ctx *gin.Context) {
@@ -54,7 +63,7 @@ func Http() {
 		}
 	}
 
-	if err := router.Run(":" + port); err != nil {
+	if err := router.Run(":" + config.HttpConfig.HttpPort); err != nil {
 		log.Fatal(err)
 	}
 }

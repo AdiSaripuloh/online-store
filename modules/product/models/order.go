@@ -1,8 +1,6 @@
 package models
 
 import (
-	"database/sql/driver"
-	"github.com/AdiSaripuloh/online-store/modules/user/models"
 	"github.com/jinzhu/gorm"
 	uuid "github.com/satori/go.uuid"
 	"time"
@@ -26,21 +24,11 @@ type Order struct {
 	Status     Status      `gorm:"column:status;type:enum('UNPAID', 'PAID', 'PROCESSING', 'DELIVERY', 'DELIVERED', 'FAILED')"`
 	CreatedAt  time.Time   `gorm:"column:createdAt;default:current_timestamp"`
 	UpdatedAt  time.Time   `gorm:"column:updatedAt;type:timestamp;default:current_timestamp ON update current_timestamp"`
-	User       models.User `gorm:"foreignKey:UserID;references:ID"`
 	OrderItems []OrderItem `gorm:"foreignKey:OrderID;references:ID"`
 }
 
 func (Order) TableName() string {
 	return "orders"
-}
-
-func (p *Status) Scan(value interface{}) error {
-	*p = Status(value.([]byte))
-	return nil
-}
-
-func (p Status) Value() (driver.Value, error) {
-	return string(p), nil
 }
 
 func (order *Order) BeforeCreate(scope *gorm.Scope) error {
