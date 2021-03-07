@@ -65,6 +65,7 @@ func JSONLogMiddleware() gin.HandlerFunc {
 		entry := log.WithFields(fields)
 
 		db := database.NewConnection()
+		defer db.Close()
 		logger := mysql.NewLoggerRepository(db)
 		_, err := logger.Create(&models.Logs{
 			ClientIP:  GetClientIP(c),
