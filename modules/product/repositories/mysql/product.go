@@ -26,8 +26,8 @@ func NewProductRepository(db *gorm.DB) repositories.ProductRepository {
 	return productRepo
 }
 
-func (pr *productRepository) GetAll() ([]models.Product, error) {
-	var results []models.Product
+func (pr *productRepository) FindAll() ([]*models.Product, error) {
+	var results []*models.Product
 	err := pr.db.Select("id, name, price, quantity").Find(&results).Error
 	if err != nil {
 		return nil, err

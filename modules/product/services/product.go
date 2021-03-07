@@ -26,8 +26,8 @@ func NewProductService(repository repositories.ProductRepository) ProductService
 	return productSvc
 }
 
-func (svc *productService) GetAll() ([]dto.Product, error) {
-	results, err := svc.repository.GetAll()
+func (svc *productService) All() ([]*dto.Product, error) {
+	results, err := svc.repository.FindAll()
 	if err != nil {
 		return nil, err
 	}

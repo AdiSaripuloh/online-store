@@ -6,7 +6,7 @@ import (
 )
 
 type ProductService interface {
-	GetAll() ([]dto.Product, error)
+	All() ([]*dto.Product, error)
 	IsAvailable(id string, quantity int64) (bool, error)
 }
 

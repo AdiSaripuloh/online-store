@@ -19,8 +19,8 @@ func NewProductHandler(resolver *resolvers.ProductResolver) *ProductHandler {
 	return handler
 }
 
-func (uh *ProductHandler) GetAll(ctx *gin.Context) {
-	products, err := uh.resolver.ProductService.GetAll()
+func (uh *ProductHandler) Index(ctx *gin.Context) {
+	products, err := uh.resolver.ProductService.All()
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, mappers.ResponseErr(err.Error()))
 		return

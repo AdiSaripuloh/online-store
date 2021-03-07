@@ -6,7 +6,7 @@ import (
 )
 
 type ProductRepository interface {
-	GetAll() ([]models.Product, error)
+	FindAll() ([]*models.Product, error)
 	FindByID(id string) (*models.Product, error)
 	GetQuantityByID(id string) (*models.Product, error)
 	UpdateQuantityByID(id uuid.UUID, quantity int64) (bool, error)
