@@ -1,5 +1,6 @@
-Online Store Challenge
-====================
+# Online Store Challenge
+
+-------------------------------------------------------------------------
 
 ## Challenge
 
@@ -9,15 +10,33 @@ had to cancel their orders.
 
 -------------------------------------------------------------------------
 
+## Causes
+- There is no transaction while insert to multiple tables or separated transactions to multiple transactions while inserting
+  to multiple tables.
+- When user doing checkout or payment application doesn't check product stock and after payment was successful product stock
+is not updated.
+- At the time of the flash sale there were too many users accessing **online store** and server was not strong enough
+to bear too much traffic then made some transactions to the database unsuccessful.
+
+## Solutions
+- **Make** single database transaction when insert to multiple tables.
+- **Do** stock validation when user checkout and payment.
+- **Do** Update stock after payment was successful.
+- **Do** rescale servers when at the time of the flash sale and consult to System Operations team.
+
+-------------------------------------------------------------------------
+
 ## Database Design
 
 ![Database Design](https://imgur.com/download/iDKw6tP/)
 
 -------------------------------------------------------------------------
 
-## API Design
+## API Endpoint Design
 
 **All responses in JSON and have the appropriate Content-Type header**
+
+Postman Collection [here](https://documenter.getpostman.com/view/3522941/Tz5jg1SG)
 
 ### GET /user
 
@@ -390,6 +409,8 @@ Error | Description
 404   | Not found
 500   | Internal server error
 
+
+-------------------------------------------------------------------------
 ## Installation
 
 ### Requirement
@@ -417,7 +438,3 @@ DB_DATABASE="online_store"
 - Open [http://localhost:8000](http://localhost:8000)
 
 -------------------------------------------------------------------------
-
-## Others
-
-- Postman Collection [here](https://documenter.getpostman.com/view/3522941/Tz5jg1SG)
