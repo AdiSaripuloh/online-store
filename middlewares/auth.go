@@ -7,6 +7,9 @@ import (
 	"strings"
 )
 
+// Auth
+// Because we are not using JWT, we are use UserID in header Authorization
+// Check request has user id or not
 func Auth() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		auth := ctx.Request.Header["Authorization"]
