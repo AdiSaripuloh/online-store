@@ -2,7 +2,7 @@ package services
 
 import (
 	"github.com/AdiSaripuloh/online-store/mappers"
-	dto2 "github.com/AdiSaripuloh/online-store/modules/user/dto"
+	"github.com/AdiSaripuloh/online-store/modules/user/dto"
 	"github.com/AdiSaripuloh/online-store/modules/user/repositories"
 	"sync"
 )
@@ -26,7 +26,7 @@ func NewUserService(repository repositories.UserRepository) UserService {
 	return userSvc
 }
 
-func (svc *userService) GetAll() ([]*dto2.User, error) {
+func (svc *userService) GetAll() ([]*dto.User, error) {
 	results, err := svc.repository.FindAll()
 	if err != nil {
 		return nil, err
