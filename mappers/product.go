@@ -1,8 +1,8 @@
 package mappers
 
 import (
-	"github.com/AdiSaripuloh/online-store/dto"
-	"github.com/AdiSaripuloh/online-store/models"
+	"github.com/AdiSaripuloh/online-store/modules/product/dto"
+	"github.com/AdiSaripuloh/online-store/modules/product/models"
 )
 
 func ProductsResponse(products []models.Product) []dto.Product {

@@ -1,14 +1,14 @@
 package mappers
 
 import (
-	"github.com/AdiSaripuloh/online-store/dto"
-	"github.com/AdiSaripuloh/online-store/models"
+	dto2 "github.com/AdiSaripuloh/online-store/modules/user/dto"
+	model2 "github.com/AdiSaripuloh/online-store/modules/user/models"
 )
 
-func UsersResponse(users []*models.User) []*dto.User {
-	var response []*dto.User
+func UsersResponse(users []*model2.User) []*dto2.User {
+	var response []*dto2.User
 	for _, user := range users {
-		response = append(response, &dto.User{
+		response = append(response, &dto2.User{
 			ID:       user.ID,
 			FullName: user.FullName,
 			Phone:    user.Phone,

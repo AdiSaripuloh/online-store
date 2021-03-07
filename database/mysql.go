@@ -2,7 +2,8 @@ package database
 
 import (
 	"github.com/AdiSaripuloh/online-store/config"
-	"github.com/AdiSaripuloh/online-store/models"
+	"github.com/AdiSaripuloh/online-store/modules/product/models"
+	model2 "github.com/AdiSaripuloh/online-store/modules/user/models"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
@@ -27,8 +28,8 @@ func Connect(conf *config.DBConfig) {
 }
 
 func Migration() {
-	if !Mysql.HasTable(models.User.TableName) {
-		Mysql.AutoMigrate(&models.User{})
+	if !Mysql.HasTable(model2.User.TableName) {
+		Mysql.AutoMigrate(&model2.User{})
 	}
 	if !Mysql.HasTable(models.Product.TableName) {
 		Mysql.AutoMigrate(&models.Product{})
@@ -55,7 +56,7 @@ func Migration() {
 
 func Seed() {
 	// User
-	Mysql.Create(&models.User{
+	Mysql.Create(&model2.User{
 		FullName: "Adi Saripuloh",
 		Phone:    "1234567890",
 		Email:    "adisaripuloh@gmail.com",
