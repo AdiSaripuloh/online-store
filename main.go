@@ -2,11 +2,9 @@ package main
 
 import (
 	"flag"
-	"github.com/AdiSaripuloh/online-store/config"
 	"github.com/AdiSaripuloh/online-store/database"
 	"github.com/AdiSaripuloh/online-store/handlers"
 	"github.com/AdiSaripuloh/online-store/middlewares"
-	"github.com/AdiSaripuloh/online-store/resolvers"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"log"
@@ -23,7 +21,7 @@ type Handler struct {
 
 var (
 	port    string
-	handler Handler
+	handler *handlers.Handler
 )
 
 func init() {
@@ -51,19 +49,7 @@ func init() {
 	if port == "" {
 		port = "8000"
 	}
-
-	// User
-	userResolver := resolvers.NewUserResolver(database.Mysql)
-	handler.userHandler = handlers.NewUserHandler(userResolver)
-	// Product
-	productResolver := resolvers.NewProductResolver(database.Mysql)
-	handler.productHandler = handlers.NewProductHandler(productResolver)
-	// Cart
-	cartResolver := resolvers.NewCartResolver(database.Mysql)
-	handler.cartHandler = handlers.NewCartHandler(cartResolver)
-	// Order
-	orderResolver := resolvers.NewOrderResolver(database.Mysql)
-	handler.orderHandler = handlers.NewOrderHandler(orderResolver)
+	handler = handlers.NewHandler(database.Mysql)
 }
 
 func main() {
@@ -84,14 +70,14 @@ func main() {
 		// V1
 		v1 := api.Group("v1")
 		{
-			v1.GET("/user", handler.userHandler.Index)
-			v1.GET("/product", handler.productHandler.GetAll)
-			v1.Use(middlewares.Auth()).GET("/cart", handler.cartHandler.Get)
-			v1.Use(middlewares.Auth()).POST("/cart", handler.cartHandler.Create)
-			v1.Use(middlewares.Auth()).POST("/cart/checkout", handler.cartHandler.Checkout)
-			v1.Use(middlewares.Auth()).GET("/order", handler.orderHandler.Get)
-			v1.Use(middlewares.Auth()).GET("/order/:orderID", handler.orderHandler.Show)
-			v1.Use(middlewares.Auth()).POST("/order/:orderID/pay", handler.orderHandler.Pay)
+			v1.GET("/user", handler.UserHandler.Index)
+			v1.GET("/product", handler.ProductHandler.GetAll)
+			v1.Use(middlewares.Auth()).GET("/cart", handler.CartHandler.Get)
+			v1.Use(middlewares.Auth()).POST("/cart", handler.CartHandler.Create)
+			v1.Use(middlewares.Auth()).POST("/cart/checkout", handler.CartHandler.Checkout)
+			v1.Use(middlewares.Auth()).GET("/order", handler.OrderHandler.Get)
+			v1.Use(middlewares.Auth()).GET("/order/:orderID", handler.OrderHandler.Show)
+			v1.Use(middlewares.Auth()).POST("/order/:orderID/pay", handler.OrderHandler.Pay)
 		}
 	}
 
