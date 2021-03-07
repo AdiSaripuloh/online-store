@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 	"github.com/AdiSaripuloh/online-store/config"
-	"github.com/AdiSaripuloh/online-store/middlewares"
 	"github.com/AdiSaripuloh/online-store/modules/product/handlers"
+	"github.com/AdiSaripuloh/online-store/modules/product/middlewares"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"log"
