@@ -4,15 +4,16 @@ import (
 	"github.com/AdiSaripuloh/online-store/common/database"
 	"github.com/AdiSaripuloh/online-store/common/resolvers"
 	"github.com/AdiSaripuloh/online-store/config"
+	handlers2 "github.com/AdiSaripuloh/online-store/modules/product/handlers"
 	"github.com/AdiSaripuloh/online-store/modules/user/handlers"
 	"sync"
 )
 
 type HttpHandler struct {
 	UserHandler    *handlers.UserHandler
-	ProductHandler *ProductHandler
-	CartHandler    *CartHandler
-	OrderHandler   *OrderHandler
+	ProductHandler *handlers2.ProductHandler
+	CartHandler    *handlers2.CartHandler
+	OrderHandler   *handlers2.OrderHandler
 }
 
 var (
@@ -28,13 +29,13 @@ func NewHandler() *HttpHandler {
 		userHandler := handlers.NewUserHandler(userResolver)
 		// Product
 		productResolver := resolvers.NewProductResolver(db)
-		productHandler := NewProductHandler(productResolver)
+		productHandler := handlers2.NewProductHandler(productResolver)
 		// Cart
 		cartResolver := resolvers.NewCartResolver(db)
-		cartHandler := NewCartHandler(cartResolver)
+		cartHandler := handlers2.NewCartHandler(cartResolver)
 		// Order
 		orderResolver := resolvers.NewOrderResolver(db)
-		orderHandler := NewOrderHandler(orderResolver)
+		orderHandler := handlers2.NewOrderHandler(orderResolver)
 
 		handlerLock.Do(func() {
 			h = &HttpHandler{
