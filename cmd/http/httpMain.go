@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 	"github.com/AdiSaripuloh/online-store/common/handlers"
+	"github.com/AdiSaripuloh/online-store/common/middlewares"
 	"github.com/AdiSaripuloh/online-store/config"
-	"github.com/AdiSaripuloh/online-store/modules/product/middlewares"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"log"
@@ -32,6 +32,12 @@ func init() {
 
 func main() {
 	router := gin.Default()
+
+	router.Use(middlewares.JSONLogMiddleware())
+	router.Use(gin.Recovery())
+	router.Use(middlewares.RequestID(middlewares.RequestIDOptions{AllowSetting: true}))
+	router.Use(middlewares.CORS(middlewares.CORSOptions{}))
+
 	gin.SetMode(config.HttpConfig.HttpDebugMode)
 
 	handler := handlers.NewHandler()

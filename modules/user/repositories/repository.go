@@ -1,7 +1,7 @@
 package repositories
 
-import model2 "github.com/AdiSaripuloh/online-store/modules/user/models"
+import "github.com/AdiSaripuloh/online-store/modules/user/models"
 
 type UserRepository interface {
-	FindAll() ([]*model2.User, error)
+	FindAll() ([]*models.User, error)
 }

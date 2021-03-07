@@ -2,6 +2,7 @@ package database
 
 import (
 	"github.com/AdiSaripuloh/online-store/config"
+	loggerModels "github.com/AdiSaripuloh/online-store/modules/logger/models"
 	productModels "github.com/AdiSaripuloh/online-store/modules/product/models"
 	userModels "github.com/AdiSaripuloh/online-store/modules/user/models"
 	_ "github.com/go-sql-driver/mysql"
@@ -54,6 +55,9 @@ func Migration(db *gorm.DB) {
 		db.AutoMigrate(&productModels.OrderItem{})
 		db.Model(&productModels.OrderItem{}).AddForeignKey("orderID", "orders (id)", "CASCADE", "CASCADE")
 		db.Model(&productModels.OrderItem{}).AddForeignKey("productID", "products (id)", "CASCADE", "CASCADE")
+	}
+	if !db.HasTable(loggerModels.Logs.TableName) {
+		db.AutoMigrate(&loggerModels.Logs{})
 	}
 }
 
