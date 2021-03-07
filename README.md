@@ -19,10 +19,10 @@ had to cancel their orders.
 
 **All responses in JSON and have the appropriate Content-Type header**
 
-### GET /products
+### GET /user
 
 ```
-GET /products
+GET /user
 Content-Type: "application/json"
 ```
 
@@ -32,15 +32,51 @@ Content-Type: "application/json"
 200 OK
 Content-Type: "application/json"
 
-[
-    {
-        "id": "f7630a17-2850-4c77-a7b6-99554814ccb8",
-        "name": "Product 1",
-        "price": 20000.00,
-        "quantity": 100
-    },
-    ...
-]
+{
+    "data": [
+        {
+            "id": "c39412d1-b547-42f6-9db5-ca27052841f9",
+            "fullName": "Adi Saripuloh",
+            "phone": "1234567890",
+            "email": "adisaripuloh@gmail.com"
+        },
+        ...
+    ],
+    "status": "SUCCESS"
+}
+```
+
+##### Errors
+
+Error | Description
+----- | ------------
+500   | Internal server error
+
+### GET /product
+
+```
+GET /product
+Content-Type: "application/json"
+```
+
+##### Returns:
+
+```
+200 OK
+Content-Type: "application/json"
+
+{
+    "data": [
+        {
+            "id": "00238ce0-e729-43f3-8c5b-2da93c9963cc",
+            "name": "Product 1",
+            "price": 10,
+            "quantity": 4
+        },
+        ...
+    ],
+    "status": "SUCCESS"
+}
 ```
 
 ##### Errors
@@ -54,19 +90,26 @@ Error | Description
 ```
 POST /cart
 Content-Type: "application/json"
+Authorization: "Bearer {{User ID}}"
 
-[
-    {
-        "productId": "f7630a17-2850-4c77-a7b6-99554814ccb8",
-        "quantity": 10,
-    },
-    ...
-]
+{
+    "items": [
+        {
+            "productID": "00238ce0-e729-43f3-8c5b-2da93c9963cc",
+            "quantity": 2
+        },
+        {
+            "productID": "0ccd34f6-97c9-4e25-911e-3e09536bdc29",
+            "quantity": 2
+        },
+        ...
+    ]
+}
 ```
 
 Attribute | Description
 --------- | -----------
-productId | Product ID
+productID | Product ID
 quantity  | Product quantity
 
 ##### Returns:
@@ -76,18 +119,32 @@ quantity  | Product quantity
 Content-Type: "application/json"
 
 {
-    "message": "Product has been added to cart"
+    "data": {
+        "id": "be4580d2-b148-49be-a707-ef84c7cd609b",
+        "price": 40,
+        "items": [
+            {
+                "id": "16429963-a925-49b2-a716-ea600db51097",
+                "productID": "00238ce0-e729-43f3-8c5b-2da93c9963cc",
+                "quantity": 2
+            },
+            {
+                "id": "d5eedd90-d2a8-46d7-8f10-5d8aaecf7f64",
+                "productID": "0ccd34f6-97c9-4e25-911e-3e09536bdc29",
+                "quantity": 2
+            },
+            ...
+        ]
+    },
+    "status": "SUCCESS"
 }
 ```
-
-Status Code | Description
------------ | -----------
-201         | Cart has been added
 
 ##### Errors
 
 Error | Description
 ----- | ------------
+400   | Bad Request
 422   | Validation error
 500   | Internal server error
 
@@ -96,6 +153,7 @@ Error | Description
 ```
 GET /cart
 Content-Type: "application/json"
+Authorization: "Bearer {{User ID}}"
 ```
 
 ##### Returns:
@@ -105,14 +163,24 @@ Content-Type: "application/json"
 Content-Type: "application/json"
 
 {
-    "id": "f7630a17-2850-4c77-a7b6-99554814ccb8",
-    "products": [
-        {
-            "productId": "f7630a17-2850-4c77-a7b6-99554814ccb8",
-            "quantity": 10,
-        },
-        ...
-    ]
+    "data": {
+        "id": "be4580d2-b148-49be-a707-ef84c7cd609b",
+        "price": 40,
+        "items": [
+            {
+                "id": "16429963-a925-49b2-a716-ea600db51097",
+                "productID": "00238ce0-e729-43f3-8c5b-2da93c9963cc",
+                "quantity": 2
+            },
+            {
+                "id": "d5eedd90-d2a8-46d7-8f10-5d8aaecf7f64",
+                "productID": "0ccd34f6-97c9-4e25-911e-3e09536bdc29",
+                "quantity": 2
+            },
+            ...
+        ]
+    },
+    "status": "SUCCESS"
 }
 ```
 
@@ -127,24 +195,27 @@ Error | Description
 404   | Cart not found
 500   | Internal server error
 
-### PUT /cart
+### POST /cart/checkout
 
 ```
-PUT /cart
+POST /cart/checkout
 Content-Type: "application/json"
+Authorization: "Bearer {{User ID}}"
 
-[
-    {
-        "productId": "f7630a17-2850-4c77-a7b6-99554814ccb8",
-        "quantity": 5,
-    },
-    ...
-]
+{
+    "items": [
+        {
+            "productID": "00238ce0-e729-43f3-8c5b-2da93c9963cc",
+            "quantity": 2
+        },
+        ...
+    ]
+}
 ```
 
 Attribute | Description
 --------- | -----------
-productId | Product ID
+productID | Product ID
 quantity  | Product quantity
 
 ##### Returns:
@@ -154,23 +225,170 @@ quantity  | Product quantity
 Content-Type: "application/json"
 
 {
-    "message": "Cart has been updated"
+    "data": {
+        "id": "28c8ca87-0c67-4a68-b439-fe02ad5ef854",
+        "grandTotal": 30,
+        "status": "UNPAID",
+        "items": [
+            {
+                "id": "cba5155e-7014-406f-a1e8-0f4f992ac4ea",
+                "productID": "00238ce0-e729-43f3-8c5b-2da93c9963cc",
+                "quantity": 3
+            },
+            ...
+        ]
+    },
+    "status": "SUCCESS"
 }
 ```
 
 Status Code | Description
 ----------- | -----------
-200         | Cart has been updated
+201         | Cart has been added
 
 ##### Errors
 
 Error | Description
 ----- | ------------
-404   | Cart or product not found
+400   | Bad Request
 422   | Validation error
 500   | Internal server error
 
--------------------------------------------------------------------------
+### GET /order
+
+```
+GET /order
+Content-Type: "application/json"
+Authorization: "Bearer {{User ID}}"
+```
+
+##### Returns:
+
+```
+200 OK
+Content-Type: "application/json"
+
+{
+    "data": [
+        {
+            "id": "28c8ca87-0c67-4a68-b439-fe02ad5ef854",
+            "grandTotal": 30,
+            "status": "UNPAID",
+            "items": [
+                {
+                    "id": "cba5155e-7014-406f-a1e8-0f4f992ac4ea",
+                    "productID": "00238ce0-e729-43f3-8c5b-2da93c9963cc",
+                    "quantity": 3
+                }
+            ]
+        },
+        ...
+    ],
+    "status": "SUCCESS"
+}
+```
+
+Status Code | Description
+----------- | -----------
+200         | Success get orders
+
+##### Errors
+
+Error | Description
+----- | ------------
+400   | Bad request
+500   | Internal server error
+
+### GET /order/{{orderID}}
+
+```
+GET /order/{{orderID}}
+Content-Type: "application/json"
+Authorization: "Bearer {{User ID}}"
+```
+
+##### Returns:
+
+```
+200 OK
+Content-Type: "application/json"
+
+{
+    "data": {
+        "id": "28c8ca87-0c67-4a68-b439-fe02ad5ef854",
+        "grandTotal": 30,
+        "status": "UNPAID",
+        "items": [
+            {
+                "id": "cba5155e-7014-406f-a1e8-0f4f992ac4ea",
+                "productID": "00238ce0-e729-43f3-8c5b-2da93c9963cc",
+                "quantity": 3
+            }
+        ]
+    }
+    "status": "SUCCESS"
+}
+```
+
+Status Code | Description
+----------- | -----------
+200         | Success get order
+
+##### Errors
+
+Error | Description
+----- | ------------
+400   | Bad request
+404   | Not found
+500   | Internal server error
+
+### POST /order/{{orderID}}/pay
+
+```
+POST /order/{{orderID}}/pay
+Content-Type: "application/json"
+Authorization: "Bearer {{User ID}}"
+
+{
+    "amount": 30
+}
+```
+
+##### Returns:
+
+```
+200 OK
+Content-Type: "application/json"
+
+{
+    "data": {
+        "id": "28c8ca87-0c67-4a68-b439-fe02ad5ef854",
+        "grandTotal": 30,
+        "status": "PAID",
+        "items": [
+            {
+                "id": "cba5155e-7014-406f-a1e8-0f4f992ac4ea",
+                "productID": "00238ce0-e729-43f3-8c5b-2da93c9963cc",
+                "quantity": 3
+            }
+        ]
+    }
+    "status": "SUCCESS"
+}
+```
+
+Status Code | Description
+----------- | -----------
+200         | Success pay order
+
+##### Errors
+
+Error | Description
+----- | ------------
+400   | Bad request
+422   | Unprocessable entity
+404   | Not found
+500   | Internal server error
 
 ## Installation
 
