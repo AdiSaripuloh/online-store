@@ -169,3 +169,37 @@ Error | Description
 404   | Cart or product not found
 422   | Validation error
 500   | Internal server error
+
+-------------------------------------------------------------------------
+
+## Installation
+
+### Requirement
+- Go version 1.15
+- MySQL
+
+### Steps
+- Copy `.env.exanmple` to `.env`
+- Create new database
+- Setup `.env`
+```dotenv
+APP_MODE=debug
+#APP_MODE=release
+#APP_MODE=test
+APP_PORT=8000
+
+DB_DRIVER="mysql"
+DB_HOST="127.0.0.1"
+DB_PORT=3306
+DB_USERNAME="root"
+DB_PASSWORD="password"
+DB_DATABASE="online_store"
+```
+- Run `go run cmd/http/httpMain.go`
+- Open [http://localhost:8000](http://localhost:8000)
+
+-------------------------------------------------------------------------
+
+## Others
+
+- Postman Collection [here](https://documenter.getpostman.com/view/3522941/Tz5jg1SG)
