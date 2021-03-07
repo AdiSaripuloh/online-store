@@ -7,7 +7,7 @@ import (
 )
 
 type UserResolver struct {
-	UserService svc.IUserService
+	UserService svc.UserService
 }
 
 func NewUserResolver(db *gorm.DB) *UserResolver {

@@ -7,8 +7,8 @@ import (
 	"sync"
 )
 
-type IUserRepository interface {
-	GetAll() ([]models.User, error)
+type UserRepository interface {
+	FindAll() ([]*models.User, error)
 }
 
 type userRepository struct {
@@ -17,10 +17,10 @@ type userRepository struct {
 
 var (
 	userRepoLock sync.Once
-	userRepo     IUserRepository
+	userRepo     UserRepository
 )
 
-func NewUserRepository(db *gorm.DB) IUserRepository {
+func NewUserRepository(db *gorm.DB) UserRepository {
 	userRepoLock.Do(func() {
 		userRepo = &userRepository{
 			db: db,
@@ -30,8 +30,8 @@ func NewUserRepository(db *gorm.DB) IUserRepository {
 	return userRepo
 }
 
-func (u *userRepository) GetAll() ([]models.User, error) {
-	var results []models.User
+func (u *userRepository) FindAll() ([]*models.User, error) {
+	var results []*models.User
 	err := database.Mysql.Select("id, fullName, phone, email").Find(&results).Error
 	if err != nil {
 		return nil, err

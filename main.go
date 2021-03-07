@@ -84,7 +84,7 @@ func main() {
 		// V1
 		v1 := api.Group("v1")
 		{
-			v1.GET("/user", handler.userHandler.GetAll)
+			v1.GET("/user", handler.userHandler.Index)
 			v1.GET("/product", handler.productHandler.GetAll)
 			v1.Use(middlewares.Auth()).GET("/cart", handler.cartHandler.Get)
 			v1.Use(middlewares.Auth()).POST("/cart", handler.cartHandler.Create)

@@ -19,7 +19,7 @@ func NewUserHandler(resolver *resolvers.UserResolver) *UserHandler {
 	return handler
 }
 
-func (uh *UserHandler) GetAll(ctx *gin.Context) {
+func (uh *UserHandler) Index(ctx *gin.Context) {
 	users, err := uh.resolver.UserService.GetAll()
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, mappers.ResponseErr(err.Error()))

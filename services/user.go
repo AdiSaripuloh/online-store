@@ -7,20 +7,20 @@ import (
 	"sync"
 )
 
-type IUserService interface {
-	GetAll() ([]dto.User, error)
+type UserService interface {
+	GetAll() ([]*dto.User, error)
 }
 
 type userService struct {
-	repository repositories.IUserRepository
+	repository repositories.UserRepository
 }
 
 var (
 	userSvcLock sync.Once
-	userSvc     IUserService
+	userSvc     UserService
 )
 
-func NewUserService(repository repositories.IUserRepository) IUserService {
+func NewUserService(repository repositories.UserRepository) UserService {
 	userSvcLock.Do(func() {
 		userSvc = &userService{
 			repository: repository,
@@ -30,8 +30,8 @@ func NewUserService(repository repositories.IUserRepository) IUserService {
 	return userSvc
 }
 
-func (svc *userService) GetAll() ([]dto.User, error) {
-	results, err := svc.repository.GetAll()
+func (svc *userService) GetAll() ([]*dto.User, error) {
+	results, err := svc.repository.FindAll()
 	if err != nil {
 		return nil, err
 	}
