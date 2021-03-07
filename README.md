@@ -11,7 +11,7 @@ had to cancel their orders.
 
 ## Database Design
 
-![Database Design](https://imgur.com/download/JpfmHlJ/)
+![Database Design](https://imgur.com/download/iDKw6tP/)
 
 -------------------------------------------------------------------------
 
