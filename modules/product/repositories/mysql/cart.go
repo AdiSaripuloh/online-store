@@ -36,7 +36,7 @@ func (cr *cartRepository) Create(cart models.Cart) (*models.Cart, error) {
 	return &cart, nil
 }
 
-func (cr *cartRepository) FindByUserIDWithItem(id string) (*models.Cart, error) {
+func (cr *cartRepository) FindByUserIDWithItems(id string) (*models.Cart, error) {
 	var result models.Cart
 	err := cr.db.Select("id, userID, grandTotal").Preload("CartItems").Where("userID = ?", id).First(&result).Error
 	if err != nil {

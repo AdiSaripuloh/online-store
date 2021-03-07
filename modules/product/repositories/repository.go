@@ -14,7 +14,7 @@ type ProductRepository interface {
 
 type CartRepository interface {
 	Create(cart models.Cart) (*models.Cart, error)
-	FindByUserIDWithItem(id string) (*models.Cart, error)
+	FindByUserIDWithItems(id string) (*models.Cart, error)
 	IsExists(id string) (*bool, error)
 	UpdateGrandTotalByID(id uuid.UUID, grandTotal float64) (bool, error)
 	DeleteByID(id uuid.UUID) (bool, error)

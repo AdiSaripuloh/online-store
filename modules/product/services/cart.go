@@ -31,12 +31,11 @@ func NewCartService(cartRepo repositories.CartRepository, productRepo repositori
 			orderRepo:   orderRepo,
 		}
 	})
-
 	return cartSvc
 }
 
 func (svc *cartService) GetCartByUserID(id string) (*dto.Cart, error) {
-	result, err := svc.cartRepo.FindByUserIDWithItem(id)
+	result, err := svc.cartRepo.FindByUserIDWithItems(id)
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +92,7 @@ func (svc *cartService) Checkout(userID string, req requests.Checkout) (*dto.Ord
 		return nil, errors.New("Failed parsing UUID.")
 	}
 
-	cart, err := svc.cartRepo.FindByUserIDWithItem(userID)
+	cart, err := svc.cartRepo.FindByUserIDWithItems(userID)
 	if err != nil {
 		return nil, errors.New("Cart not found.")
 	}

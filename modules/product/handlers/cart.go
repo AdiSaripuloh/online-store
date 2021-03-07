@@ -20,7 +20,7 @@ func NewCartHandler(resolver *resolvers.CartResolver) *CartHandler {
 	return handler
 }
 
-func (uh *CartHandler) Get(ctx *gin.Context) {
+func (uh *CartHandler) Index(ctx *gin.Context) {
 	userID := ctx.GetString("UserID")
 	cart, err := uh.resolver.CartService.GetCartByUserID(userID)
 	if err != nil {
