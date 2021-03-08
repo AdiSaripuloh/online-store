@@ -9,10 +9,10 @@ import (
 )
 
 type CartHandler struct {
-	resolver *mysql.CartResolver
+	resolver *resolvers.CartResolver
 }
 
-func NewCartHandler(resolver *mysql.CartResolver) *CartHandler {
+func NewCartHandler(resolver *resolvers.CartResolver) *CartHandler {
 	handler := &CartHandler{
 		resolver: resolver,
 	}

@@ -8,10 +8,10 @@ import (
 )
 
 type ProductHandler struct {
-	resolver *mysql.ProductResolver
+	resolver *resolvers.ProductResolver
 }
 
-func NewProductHandler(resolver *mysql.ProductResolver) *ProductHandler {
+func NewProductHandler(resolver *resolvers.ProductResolver) *ProductHandler {
 	handler := &ProductHandler{
 		resolver: resolver,
 	}

@@ -8,10 +8,10 @@ import (
 )
 
 type UserHandler struct {
-	resolver *mysql.UserResolver
+	resolver *resolvers.UserResolver
 }
 
-func NewUserHandler(resolver *mysql.UserResolver) *UserHandler {
+func NewUserHandler(resolver *resolvers.UserResolver) *UserHandler {
 	handler := &UserHandler{
 		resolver: resolver,
 	}

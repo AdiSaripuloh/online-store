@@ -9,10 +9,10 @@ import (
 )
 
 type OrderHandler struct {
-	resolver *mysql.OrderResolver
+	resolver *resolvers.OrderResolver
 }
 
-func NewOrderHandler(resolver *mysql.OrderResolver) *OrderHandler {
+func NewOrderHandler(resolver *resolvers.OrderResolver) *OrderHandler {
 	handler := &OrderHandler{
 		resolver: resolver,
 	}
