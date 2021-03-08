@@ -1,7 +1,7 @@
 package services
 
 import (
-	"errors"
+	"github.com/AdiSaripuloh/online-store/common/responses"
 	"github.com/AdiSaripuloh/online-store/modules/product/dto"
 	"github.com/AdiSaripuloh/online-store/modules/product/repositories"
 	uuid "github.com/satori/go.uuid"
@@ -27,26 +27,26 @@ func NewProductService(repository repositories.ProductRepository) ProductService
 	return productSvc
 }
 
-func (svc *productService) All() ([]*dto.Product, error) {
+func (svc *productService) All() ([]*dto.Product, *responses.HttpError) {
 	results, err := svc.repository.FindAll()
 	if err != nil {
-		return nil, err
+		return nil, responses.InternalServerError(nil)
 	}
 	return dto.ProductsResponse(results), nil
 }
 
-func (svc *productService) IsAvailable(id string, quantity int64) (bool, error) {
+func (svc *productService) IsAvailable(id string, quantity int64) (bool, *responses.HttpError) {
 	uuID, err := uuid.FromString(id)
 	if err != nil {
-		return false, errors.New("Failed parsing UUID.")
+		return false, responses.BadRequest("Failed parsing UUID.", nil)
 	}
 
 	product, err := svc.repository.GetQuantityByID(uuID)
 	if err != nil {
-		return false, err
+		return false, responses.InternalServerError(nil)
 	}
 	if product.Quantity < quantity {
-		return false, nil
+		return false, responses.BadRequest("Out of stock.", nil)
 	}
 	return true, nil
 }

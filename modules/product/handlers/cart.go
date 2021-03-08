@@ -1,11 +1,10 @@
 package handlers
 
 import (
-	"github.com/AdiSaripuloh/online-store/common/mappers"
 	"github.com/AdiSaripuloh/online-store/common/resolvers/mysql"
+	"github.com/AdiSaripuloh/online-store/common/responses"
 	"github.com/AdiSaripuloh/online-store/modules/product/dto"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 type CartHandler struct {
@@ -24,43 +23,77 @@ func (uh *CartHandler) Index(ctx *gin.Context) {
 	userID := ctx.GetString("UserID")
 	cart, err := uh.resolver.CartService.GetByUserID(userID)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusNotFound, mappers.ResponseFailed("Cart not found!"))
+		ctx.AbortWithStatusJSON(err.GetStatusCode(), gin.H{
+			"status":  err.GetType(),
+			"message": err.GetMessage(),
+			"data":    err.GetData(),
+		})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, mappers.ResponseSuccess(cart))
+	response := responses.Success(cart)
+	ctx.JSON(response.GetStatusCode(), gin.H{
+		"status": response.GetType(),
+		"data":   response.GetData(),
+	})
 }
 
 func (uh *CartHandler) Store(ctx *gin.Context) {
 	var request dto.CreateCartRequest
 	if err := ctx.ShouldBindJSON(&request); err != nil {
-		ctx.JSON(http.StatusOK, mappers.ResponseFailed(err.Error()))
+		err := responses.UnprocessableEntity(err.Error(), nil)
+		ctx.AbortWithStatusJSON(err.GetStatusCode(), gin.H{
+			"status":  err.GetType(),
+			"message": err.GetMessage(),
+			"data":    err.GetData(),
+		})
 		return
 	}
 
 	userID := ctx.GetString("UserID")
 	cart, err := uh.resolver.CartService.Create(userID, request)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, mappers.ResponseFailed(err.Error()))
+		ctx.AbortWithStatusJSON(err.GetStatusCode(), gin.H{
+			"status":  err.GetType(),
+			"message": err.GetMessage(),
+			"data":    err.GetData(),
+		})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, mappers.ResponseSuccess(cart))
+	response := responses.Created(cart)
+	ctx.JSON(response.GetStatusCode(), gin.H{
+		"status": response.GetType(),
+		"data":   response.GetData(),
+	})
 }
 
 func (uh *CartHandler) Checkout(ctx *gin.Context) {
 	var request dto.CheckoutCartRequest
 	if err := ctx.ShouldBindJSON(&request); err != nil {
-		ctx.JSON(http.StatusOK, mappers.ResponseFailed(err.Error()))
+		err := responses.UnprocessableEntity(err.Error(), nil)
+		ctx.AbortWithStatusJSON(err.GetStatusCode(), gin.H{
+			"status":  err.GetType(),
+			"message": err.GetMessage(),
+			"data":    err.GetData(),
+		})
 		return
 	}
 
 	userID := ctx.GetString("UserID")
 	cart, err := uh.resolver.CartService.Checkout(userID, request)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, mappers.ResponseFailed(err.Error()))
+		ctx.AbortWithStatusJSON(err.GetStatusCode(), gin.H{
+			"status":  err.GetType(),
+			"message": err.GetMessage(),
+			"data":    err.GetData(),
+		})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, mappers.ResponseSuccess(cart))
+	response := responses.Success(cart)
+	ctx.JSON(response.GetStatusCode(), gin.H{
+		"status": response.GetType(),
+		"data":   response.GetData(),
+	})
 }

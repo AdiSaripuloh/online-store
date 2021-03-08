@@ -1,7 +1,7 @@
 package services
 
 import (
-	"errors"
+	"github.com/AdiSaripuloh/online-store/common/responses"
 	"github.com/AdiSaripuloh/online-store/modules/product/dto"
 	"github.com/AdiSaripuloh/online-store/modules/product/models"
 	"github.com/AdiSaripuloh/online-store/modules/product/repositories"
@@ -30,66 +30,66 @@ func NewOrderService(orderRepo repositories.OrderRepository, productRepo reposit
 	return orderSvc
 }
 
-func (svc *orderService) GetOrderByID(id string) (*dto.Order, error) {
+func (svc *orderService) GetOrderByID(id string) (*dto.Order, *responses.HttpError) {
 	uuID, err := uuid.FromString(id)
 	if err != nil {
-		return nil, errors.New("Failed parsing UUID.")
+		return nil, responses.BadRequest("Failed parsing UUID.", nil)
 	}
 
 	result, err := svc.orderRepo.FindByIDWithItems(uuID)
 	if err != nil {
-		return nil, err
+		return nil, responses.InternalServerError(nil)
 	}
 	return dto.OrderResponse(result), nil
 }
 
-func (svc *orderService) GetOrderByUserID(id string) ([]*dto.Order, error) {
+func (svc *orderService) GetOrderByUserID(id string) ([]*dto.Order, *responses.HttpError) {
 	uuID, err := uuid.FromString(id)
 	if err != nil {
-		return nil, errors.New("Failed parsing UUID.")
+		return nil, responses.BadRequest("Failed parsing UUID.", nil)
 	}
 
 	result, err := svc.orderRepo.FindByUserIDWithItems(uuID)
 	if err != nil {
-		return nil, err
+		return nil, responses.NotFound(err.Error(), nil)
 	}
 	return dto.OrdersResponse(result), nil
 }
 
-func (svc *orderService) Pay(id string, userID string, req dto.PayOrderRequest) (*dto.Order, error) {
+func (svc *orderService) Pay(id string, userID string, req dto.PayOrderRequest) (*dto.Order, *responses.HttpError) {
 	uuID, err := uuid.FromString(id)
 	if err != nil {
-		return nil, errors.New("Failed parsing UUID.")
+		return nil, responses.BadRequest("Failed parsing UUID.", nil)
 	}
 
 	order, err := svc.orderRepo.FindByIDWithItems(uuID)
 	if err != nil {
-		return nil, errors.New("Order not found.")
+		return nil, responses.NotFound("Order not found.", nil)
 	}
 
 	if order.Status != models.UNPAID {
-		return nil, errors.New("Order status is " + string(order.Status) + ". Contact administrator for more information.")
+		return nil, responses.BadRequest("Order status is "+string(order.Status)+". Contact administrator for more information.", nil)
 	}
 
 	if order.GrandTotal != req.Amount {
-		return nil, errors.New("Amount doesn't match.")
+		return nil, responses.BadRequest("Amount doesn't match.", nil)
 	}
 
 	userUUID, err := uuid.FromString(userID)
 	if err != nil {
-		return nil, errors.New("Failed parsing UUID.")
+		return nil, responses.BadRequest("Failed parsing UUID.", nil)
 	}
 	if order.UserID != userUUID {
-		return nil, errors.New("Forbidden.")
+		return nil, responses.Forbidden("User ID not match", nil)
 	}
 
 	for _, item := range order.OrderItems {
 		product, err := svc.productRepo.GetQuantityByID(item.ProductID)
 		if err != nil {
-			return nil, errors.New("Failed get product quantity.")
+			return nil, responses.BadRequest("Failed get product quantity.", nil)
 		}
 		if item.Quantity > product.Quantity {
-			return nil, errors.New(product.Name + " out of stock.")
+			return nil, responses.BadRequest(product.Name+" out of stock.", nil)
 		}
 		quantity := product.Quantity - item.Quantity
 		_, _ = svc.productRepo.Update(&models.Product{
@@ -103,7 +103,7 @@ func (svc *orderService) Pay(id string, userID string, req dto.PayOrderRequest) 
 		Status: models.PAID,
 	})
 	if err != nil || !update {
-		return nil, errors.New("Failed update status")
+		return nil, responses.InternalServerError(nil)
 	}
 
 	order.Status = models.PAID

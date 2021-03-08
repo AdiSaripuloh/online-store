@@ -52,7 +52,17 @@ func BadRequest(message interface{}, data interface{}) *HttpError {
 // Status Code 401
 func Unauthorized(message interface{}, data interface{}) *HttpError {
 	return &HttpError{
-		StatusCode: 400,
+		StatusCode: 401,
+		Message:    message,
+		Data:       data,
+		Type:       FAILED,
+	}
+}
+
+// Status Code 403
+func Forbidden(message interface{}, data interface{}) *HttpError {
+	return &HttpError{
+		StatusCode: 403,
 		Message:    message,
 		Data:       data,
 		Type:       FAILED,
@@ -65,7 +75,7 @@ func NotFound(message interface{}, data interface{}) *HttpError {
 		StatusCode: 404,
 		Message:    message,
 		Data:       data,
-		Type:       ERROR,
+		Type:       FAILED,
 	}
 }
 

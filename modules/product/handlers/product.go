@@ -1,10 +1,9 @@
 package handlers
 
 import (
-	"github.com/AdiSaripuloh/online-store/common/mappers"
 	"github.com/AdiSaripuloh/online-store/common/resolvers/mysql"
+	"github.com/AdiSaripuloh/online-store/common/responses"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 type ProductHandler struct {
@@ -22,9 +21,17 @@ func NewProductHandler(resolver *resolvers.ProductResolver) *ProductHandler {
 func (uh *ProductHandler) Index(ctx *gin.Context) {
 	products, err := uh.resolver.ProductService.All()
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, mappers.ResponseErr(err.Error()))
+		ctx.AbortWithStatusJSON(err.GetStatusCode(), gin.H{
+			"status":  err.GetType(),
+			"message": err.GetMessage(),
+			"data":    err.GetData(),
+		})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, mappers.ResponseSuccess(products))
+	response := responses.Success(products)
+	ctx.JSON(response.GetStatusCode(), gin.H{
+		"status": response.GetType(),
+		"data":   response.GetData(),
+	})
 }

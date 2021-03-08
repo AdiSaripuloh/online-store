@@ -1,9 +1,9 @@
 package middlewares
 
 import (
+	"github.com/AdiSaripuloh/online-store/common/responses"
 	"github.com/gin-gonic/gin"
 	uuid "github.com/satori/go.uuid"
-	"net/http"
 	"regexp"
 	"strings"
 )
@@ -18,41 +18,42 @@ func Auth() gin.HandlerFunc {
 		r, _ := regexp.Compile("^Bearer (.+)$")
 
 		match := r.FindStringSubmatch(authHeader)
+		unauthorized := responses.Unauthorized("Unauthorized", nil)
 
 		if len(match) == 0 {
-			ctx.JSON(http.StatusUnauthorized, gin.H{
-				"status":  "FAILED",
-				"message": "Unauthorized",
+			ctx.AbortWithStatusJSON(unauthorized.GetStatusCode(), gin.H{
+				"status":  unauthorized.GetType(),
+				"message": unauthorized.GetMessage(),
+				"data":    unauthorized.GetData(),
 			})
-			ctx.Abort()
 		}
 		tokenString := match[1]
 
 		if len(tokenString) == 0 {
-			ctx.JSON(http.StatusUnauthorized, gin.H{
-				"status":  "FAILED",
-				"message": "Unauthorized",
+			ctx.AbortWithStatusJSON(unauthorized.GetStatusCode(), gin.H{
+				"status":  unauthorized.GetType(),
+				"message": unauthorized.GetMessage(),
+				"data":    unauthorized.GetData(),
 			})
-			ctx.Abort()
 		}
 
 		auth := strings.Split(match[0], " ")
 		if len(auth) < 2 {
-			ctx.JSON(http.StatusUnauthorized, gin.H{
-				"status":  "FAILED",
-				"message": "Unauthorized",
+			ctx.AbortWithStatusJSON(unauthorized.GetStatusCode(), gin.H{
+				"status":  unauthorized.GetType(),
+				"message": unauthorized.GetMessage(),
+				"data":    unauthorized.GetData(),
 			})
-			ctx.Abort()
 		}
 		userID := auth[1]
 
 		_, err := uuid.FromString(userID)
 		if err != nil {
-			ctx.JSON(http.StatusUnauthorized, gin.H{
-				"status":  "FAILED",
-				"message": "Unauthorized",
+			ctx.AbortWithStatusJSON(unauthorized.GetStatusCode(), gin.H{
+				"status":  unauthorized.GetType(),
+				"message": unauthorized.GetMessage(),
+				"data":    unauthorized.GetData(),
 			})
-			ctx.Abort()
 		}
 
 		ctx.Set("UserID", userID)
