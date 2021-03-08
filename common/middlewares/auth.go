@@ -19,41 +19,30 @@ func Auth() gin.HandlerFunc {
 
 		match := r.FindStringSubmatch(authHeader)
 		unauthorized := responses.Unauthorized("Unauthorized", nil)
+		responseError := gin.H{
+			"status":  unauthorized.GetType(),
+			"message": unauthorized.GetMessage(),
+			"data":    unauthorized.GetData(),
+		}
 
 		if len(match) == 0 {
-			ctx.AbortWithStatusJSON(unauthorized.GetStatusCode(), gin.H{
-				"status":  unauthorized.GetType(),
-				"message": unauthorized.GetMessage(),
-				"data":    unauthorized.GetData(),
-			})
+			ctx.AbortWithStatusJSON(unauthorized.GetStatusCode(), responseError)
 		}
 		tokenString := match[1]
 
 		if len(tokenString) == 0 {
-			ctx.AbortWithStatusJSON(unauthorized.GetStatusCode(), gin.H{
-				"status":  unauthorized.GetType(),
-				"message": unauthorized.GetMessage(),
-				"data":    unauthorized.GetData(),
-			})
+			ctx.AbortWithStatusJSON(unauthorized.GetStatusCode(), responseError)
 		}
 
 		auth := strings.Split(match[0], " ")
 		if len(auth) < 2 {
-			ctx.AbortWithStatusJSON(unauthorized.GetStatusCode(), gin.H{
-				"status":  unauthorized.GetType(),
-				"message": unauthorized.GetMessage(),
-				"data":    unauthorized.GetData(),
-			})
+			ctx.AbortWithStatusJSON(unauthorized.GetStatusCode(), responseError)
 		}
 		userID := auth[1]
 
 		_, err := uuid.FromString(userID)
 		if err != nil {
-			ctx.AbortWithStatusJSON(unauthorized.GetStatusCode(), gin.H{
-				"status":  unauthorized.GetType(),
-				"message": unauthorized.GetMessage(),
-				"data":    unauthorized.GetData(),
-			})
+			ctx.AbortWithStatusJSON(unauthorized.GetStatusCode(), responseError)
 		}
 
 		ctx.Set("UserID", userID)
