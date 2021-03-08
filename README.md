@@ -435,6 +435,11 @@ DB_PASSWORD="password"
 DB_DATABASE="online_store"
 ```
 - Run `go run cmd/http/httpMain.go`
+```
+Flags
+--migration=true Enable migration
+--seed=true Seed data users and products
+```
 - Open [http://localhost:8000](http://localhost:8000)
 
 -------------------------------------------------------------------------
