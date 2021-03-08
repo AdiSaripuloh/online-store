@@ -2,9 +2,8 @@ package handlers
 
 import (
 	"github.com/AdiSaripuloh/online-store/common/resolvers/mysql"
-	"github.com/AdiSaripuloh/online-store/mappers"
+	"github.com/AdiSaripuloh/online-store/common/responses"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 type UserHandler struct {
@@ -22,9 +21,17 @@ func NewUserHandler(resolver *resolvers.UserResolver) *UserHandler {
 func (uh *UserHandler) Index(ctx *gin.Context) {
 	users, err := uh.resolver.UserService.GetAll()
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, mappers.ResponseErr(err.Error()))
+		ctx.AbortWithStatusJSON(err.GetStatusCode(), gin.H{
+			"status":  err.GetType(),
+			"message": err.GetMessage(),
+			"data":    err.GetData(),
+		})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, mappers.ResponseSuccess(users))
+	response := responses.Success(users)
+	ctx.JSON(response.GetStatusCode(), gin.H{
+		"status": response.GetType(),
+		"data":   response.GetData(),
+	})
 }

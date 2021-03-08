@@ -1,8 +1,8 @@
 package handlers
 
 import (
+	"github.com/AdiSaripuloh/online-store/common/mappers"
 	"github.com/AdiSaripuloh/online-store/common/resolvers/mysql"
-	"github.com/AdiSaripuloh/online-store/mappers"
 	"github.com/AdiSaripuloh/online-store/modules/product/dto"
 	"github.com/gin-gonic/gin"
 	"net/http"

@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"github.com/AdiSaripuloh/online-store/common/responses"
 	"github.com/AdiSaripuloh/online-store/modules/user/models"
 	"github.com/AdiSaripuloh/online-store/modules/user/repositories"
 	"github.com/jinzhu/gorm"
@@ -26,11 +27,11 @@ func NewUserRepository(db *gorm.DB) repositories.UserRepository {
 	return userRepo
 }
 
-func (ur *userRepository) FindAll() ([]*models.User, error) {
+func (ur *userRepository) FindAll() ([]*models.User, *responses.HttpError) {
 	var results []*models.User
 	err := ur.db.Select("id, fullName, phone, email").Find(&results).Error
 	if err != nil {
-		return nil, err
+		return nil, responses.InternalServerError(nil)
 	}
 	return results, nil
 }

@@ -1,6 +1,7 @@
 package services
 
 import (
+	"github.com/AdiSaripuloh/online-store/common/responses"
 	"github.com/AdiSaripuloh/online-store/modules/user/dto"
 	"github.com/AdiSaripuloh/online-store/modules/user/repositories"
 	"sync"
@@ -25,7 +26,7 @@ func NewUserService(repository repositories.UserRepository) UserService {
 	return userSvc
 }
 
-func (svc *userService) GetAll() ([]*dto.User, error) {
+func (svc *userService) GetAll() ([]*dto.User, *responses.HttpError) {
 	results, err := svc.repository.FindAll()
 	if err != nil {
 		return nil, err
