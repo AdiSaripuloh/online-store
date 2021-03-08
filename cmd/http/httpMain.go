@@ -45,6 +45,13 @@ func main() {
 		log.Fatal("Setup .env properly")
 	}
 
+	router.NoRoute(func(c *gin.Context) {
+		c.JSON(404, gin.H{
+			"code":    "Not Found",
+			"message": "Page not found"},
+		)
+	})
+
 	// Home
 	router.GET("/", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{
