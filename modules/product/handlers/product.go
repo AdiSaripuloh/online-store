@@ -1,17 +1,17 @@
 package handlers
 
 import (
-	"github.com/AdiSaripuloh/online-store/common/resolvers"
+	"github.com/AdiSaripuloh/online-store/common/resolvers/mysql"
 	"github.com/AdiSaripuloh/online-store/mappers"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 type ProductHandler struct {
-	resolver *resolvers.ProductResolver
+	resolver *mysql.ProductResolver
 }
 
-func NewProductHandler(resolver *resolvers.ProductResolver) *ProductHandler {
+func NewProductHandler(resolver *mysql.ProductResolver) *ProductHandler {
 	handler := &ProductHandler{
 		resolver: resolver,
 	}

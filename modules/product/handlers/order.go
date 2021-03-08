@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"github.com/AdiSaripuloh/online-store/common/resolvers"
+	"github.com/AdiSaripuloh/online-store/common/resolvers/mysql"
 	"github.com/AdiSaripuloh/online-store/mappers"
 	"github.com/AdiSaripuloh/online-store/modules/product/dto"
 	"github.com/gin-gonic/gin"
@@ -9,10 +9,10 @@ import (
 )
 
 type OrderHandler struct {
-	resolver *resolvers.OrderResolver
+	resolver *mysql.OrderResolver
 }
 
-func NewOrderHandler(resolver *resolvers.OrderResolver) *OrderHandler {
+func NewOrderHandler(resolver *mysql.OrderResolver) *OrderHandler {
 	handler := &OrderHandler{
 		resolver: resolver,
 	}

@@ -1,17 +1,17 @@
 package handlers
 
 import (
-	"github.com/AdiSaripuloh/online-store/common/resolvers"
+	"github.com/AdiSaripuloh/online-store/common/resolvers/mysql"
 	"github.com/AdiSaripuloh/online-store/mappers"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 type UserHandler struct {
-	resolver *resolvers.UserResolver
+	resolver *mysql.UserResolver
 }
 
-func NewUserHandler(resolver *resolvers.UserResolver) *UserHandler {
+func NewUserHandler(resolver *mysql.UserResolver) *UserHandler {
 	handler := &UserHandler{
 		resolver: resolver,
 	}

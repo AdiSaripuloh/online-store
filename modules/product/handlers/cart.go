@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"github.com/AdiSaripuloh/online-store/common/resolvers"
+	"github.com/AdiSaripuloh/online-store/common/resolvers/mysql"
 	"github.com/AdiSaripuloh/online-store/mappers"
 	"github.com/AdiSaripuloh/online-store/modules/product/dto"
 	"github.com/gin-gonic/gin"
@@ -9,10 +9,10 @@ import (
 )
 
 type CartHandler struct {
-	resolver *resolvers.CartResolver
+	resolver *mysql.CartResolver
 }
 
-func NewCartHandler(resolver *resolvers.CartResolver) *CartHandler {
+func NewCartHandler(resolver *mysql.CartResolver) *CartHandler {
 	handler := &CartHandler{
 		resolver: resolver,
 	}
